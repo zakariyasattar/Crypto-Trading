@@ -1,6 +1,16 @@
+/**
+ * @file main.cpp
+ * @author Zakariya Sattar
+ *
+ * Initialize Application
+ */
+
 #include <iostream>
+#include "OrderBookLib/OrderBook.h"
 
 int main() {
-    std::cout << "hello" << std::endl;
+    OrderBook orderBook;
+    orderBook.DisplayOrderBook();
+
     return 0;
 }

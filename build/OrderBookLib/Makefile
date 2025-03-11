@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles /Users/zakariyasattar/crypto_algo/build//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd /Users/zakariyasattar/crypto_algo/build && $(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles /Users/zakariyasattar/crypto_algo/build/OrderBookLib//CMakeFiles/progress.marks
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,68 +103,80 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/zakariyasattar/crypto_algo/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named trading_system
+# Convenience name for target.
+OrderBookLib/CMakeFiles/OrderBookLib.dir/rule:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/CMakeFiles/OrderBookLib.dir/rule
+.PHONY : OrderBookLib/CMakeFiles/OrderBookLib.dir/rule
 
-# Build rule for target.
-trading_system: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 trading_system
-.PHONY : trading_system
-
-# fast build rule for target.
-trading_system/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/build
-.PHONY : trading_system/fast
-
-#=============================================================================
-# Target rules for targets named OrderBookLib
-
-# Build rule for target.
-OrderBookLib: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib
+# Convenience name for target.
+OrderBookLib: OrderBookLib/CMakeFiles/OrderBookLib.dir/rule
 .PHONY : OrderBookLib
 
 # fast build rule for target.
 OrderBookLib/fast:
-	$(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/build
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/build
 .PHONY : OrderBookLib/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+Order.o: Order.cpp.o
+.PHONY : Order.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/main.cpp.o
-.PHONY : main.cpp.o
+Order.cpp.o:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.o
+.PHONY : Order.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+Order.i: Order.cpp.i
+.PHONY : Order.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/main.cpp.i
-.PHONY : main.cpp.i
+Order.cpp.i:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.i
+.PHONY : Order.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+Order.s: Order.cpp.s
+.PHONY : Order.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/main.cpp.s
-.PHONY : main.cpp.s
+Order.cpp.s:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.s
+.PHONY : Order.cpp.s
+
+OrderBook.o: OrderBook.cpp.o
+.PHONY : OrderBook.o
+
+# target to build an object file
+OrderBook.cpp.o:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o
+.PHONY : OrderBook.cpp.o
+
+OrderBook.i: OrderBook.cpp.i
+.PHONY : OrderBook.i
+
+# target to preprocess a source file
+OrderBook.cpp.i:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.i
+.PHONY : OrderBook.cpp.i
+
+OrderBook.s: OrderBook.cpp.s
+.PHONY : OrderBook.s
+
+# target to generate assembly for a file
+OrderBook.cpp.s:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.s
+.PHONY : OrderBook.cpp.s
 
 # Help Target
 help:
@@ -175,10 +187,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... OrderBookLib"
-	@echo "... trading_system"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... Order.o"
+	@echo "... Order.i"
+	@echo "... Order.s"
+	@echo "... OrderBook.o"
+	@echo "... OrderBook.i"
+	@echo "... OrderBook.s"
 .PHONY : help
 
 
@@ -190,6 +204,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/zakariyasattar/crypto_algo/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

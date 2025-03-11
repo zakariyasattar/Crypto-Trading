@@ -222,6 +222,24 @@ CMAKE_TAPI:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/tapi
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+OrderBookLib_BINARY_DIR:STATIC=/Users/zakariyasattar/crypto_algo/build/OrderBookLib
+
+//Value Computed by CMake
+OrderBookLib_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+OrderBookLib_SOURCE_DIR:STATIC=/Users/zakariyasattar/crypto_algo/OrderBookLib
+
+//Value Computed by CMake
+TradingAlgoLib_BINARY_DIR:STATIC=/Users/zakariyasattar/crypto_algo/build/TradingAlgoLib
+
+//Value Computed by CMake
+TradingAlgoLib_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+TradingAlgoLib_SOURCE_DIR:STATIC=/Users/zakariyasattar/crypto_algo/TradingAlgoLib
+
 
 ########################
 # INTERNAL cache entries
@@ -321,7 +339,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
