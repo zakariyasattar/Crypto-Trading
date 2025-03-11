@@ -8,6 +8,7 @@
 
 #include "OrderBook.h"
 #include "Order.h"
+#include "DataIngestion.h"
 
 using namespace std;
 
@@ -17,18 +18,15 @@ using namespace std;
  *
 */
 
+void OrderBook::initData() {
+    DataIngestion di {};
+    di.populate(bids, asks);
+}
 
 void OrderBook::DisplayOrderBook() {
-    for(int i {}; i < 10; i++) {
-        bids.emplace_back(Order {1, 2, true});
-        asks.emplace_back(Order {1, 3, false});
+    for(const Order& ask : asks) {
+        cout << ask << endl;
     }
-
-    cout << asks[asks.size() - 1] << endl;
-
-    // for(const Order& ask : asks) {
-    //     cout << ask << endl;
-    // }
 
     // for(const Order& bid : bids) {
     //     cout << bid << endl;

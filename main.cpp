@@ -9,7 +9,7 @@
 #include "OrderBookLib/OrderBook.h"
 
 int main() {
-    OrderBook orderBook;
+    OrderBook orderBook {};
     orderBook.DisplayOrderBook();
 
     return 0;

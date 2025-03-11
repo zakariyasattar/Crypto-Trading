@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libOrderBookLib.a CMakeFiles/OrderBookLib.dir/Order.cpp.o CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ar qc libOrderBookLib.a CMakeFiles/OrderBookLib.dir/Order.cpp.o CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o
 /Library/Developer/CommandLineTools/usr/bin/ranlib libOrderBookLib.a

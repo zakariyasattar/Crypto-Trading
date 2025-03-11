@@ -17,6 +17,13 @@ private:
     std::vector<Order> asks;
 
 public:
+
+    // Call initData() on class construction
+    OrderBook() { initData(); };
+
+    // Pull data from source and populate member vectors
+    void initData();
+
     // Print out OrderBook
     void DisplayOrderBook();
 

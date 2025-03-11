@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/Users/zakariyasattar/crypto_algo/OrderBookLib/DataIngestion.cpp" "OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o" "gcc" "OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o.d"
   "/Users/zakariyasattar/crypto_algo/OrderBookLib/Order.cpp" "OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.o" "gcc" "OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.o.d"
   "/Users/zakariyasattar/crypto_algo/OrderBookLib/OrderBook.cpp" "OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o" "gcc" "OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o.d"
   )

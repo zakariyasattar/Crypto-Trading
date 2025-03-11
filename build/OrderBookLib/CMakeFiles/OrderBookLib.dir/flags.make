@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/zakariyasattar/crypto_algo/OrderBookLib
+CXX_INCLUDES = -I/usr/local/include -I/Users/zakariyasattar/crypto_algo/OrderBookLib
 
 CXX_FLAGSarm64 = -std=gnu++20 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -mmacosx-version-min=14.6
 

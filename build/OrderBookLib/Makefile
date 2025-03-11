@@ -130,6 +130,30 @@ OrderBookLib/fast:
 	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/build
 .PHONY : OrderBookLib/fast
 
+DataIngestion.o: DataIngestion.cpp.o
+.PHONY : DataIngestion.o
+
+# target to build an object file
+DataIngestion.cpp.o:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o
+.PHONY : DataIngestion.cpp.o
+
+DataIngestion.i: DataIngestion.cpp.i
+.PHONY : DataIngestion.i
+
+# target to preprocess a source file
+DataIngestion.cpp.i:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.i
+.PHONY : DataIngestion.cpp.i
+
+DataIngestion.s: DataIngestion.cpp.s
+.PHONY : DataIngestion.s
+
+# target to generate assembly for a file
+DataIngestion.cpp.s:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.s
+.PHONY : DataIngestion.cpp.s
+
 Order.o: Order.cpp.o
 .PHONY : Order.o
 
@@ -187,6 +211,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... OrderBookLib"
+	@echo "... DataIngestion.o"
+	@echo "... DataIngestion.i"
+	@echo "... DataIngestion.s"
 	@echo "... Order.o"
 	@echo "... Order.i"
 	@echo "... Order.s"

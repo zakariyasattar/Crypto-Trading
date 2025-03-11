@@ -5,7 +5,18 @@ project(OrderBookLib)
 set(SOURCE_FILES
     Order.cpp
     OrderBook.cpp
+    DataIngestion.cpp
 )
+
+# Find CURL (libcurl)
+find_package(CURL REQUIRED)
+
+# Manually set cURLpp paths (change if installed elsewhere)
+set(CURLPP_INCLUDE_DIR /usr/local/include)
+set(CURLPP_LIBRARY /usr/local/lib/libcurlpp.dylib)
+
+# Include directories
+include_directories(${CURLPP_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
 
 # Create a static library
 add_library(OrderBookLib STATIC ${SOURCE_FILES})
