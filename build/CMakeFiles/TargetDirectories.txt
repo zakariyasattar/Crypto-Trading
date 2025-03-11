@@ -1,0 +1,3 @@
+/Users/zakariyasattar/crypto_algo/build/CMakeFiles/trading_system.dir
+/Users/zakariyasattar/crypto_algo/build/CMakeFiles/edit_cache.dir
+/Users/zakariyasattar/crypto_algo/build/CMakeFiles/rebuild_cache.dir
