@@ -12,13 +12,15 @@
 #include "Order.h"
 
 #include <vector>
+#include <map>
 #include <memory>
 
 class OrderBook {
 
 private:
-    std::vector<std::unique_ptr<Order>> mBids;
-    std::vector<std::unique_ptr<Order>> mAsks;
+    // key: price, value: shares
+    std::multimap<double, double> mBids;
+    std::multimap<double, double> mAsks;
 
 public:
 

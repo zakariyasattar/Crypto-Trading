@@ -960,4 +960,6 @@ CMakeFiles/trading_system.dir/main.cpp.o: \
   /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.h \
   /Users/zakariyasattar/crypto_algo/OrderBookLib/Order.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/sstream \
-  /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.h
+  /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree

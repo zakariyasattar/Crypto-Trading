@@ -20,18 +20,21 @@ using namespace std;
 
 void OrderBook::initData() {
     // Ingest data from Alpaca
-    DataIngestion di {};
+    const string api_key { "PKWTH6N3SM1XALKB870E" };
+    const string api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
+
+    DataIngestion di { api_key, api_secret };
     di.populate(mBids, mAsks);
 
     DisplayOrderBook();
 }
 
 void OrderBook::DisplayOrderBook() {
-    for(const auto& ask : mAsks) {
-        cout << *ask << endl;
+    for(const auto& [k, v]: mAsks) {
+        cout << k << ": " << v << endl;
     }
     
-    for(const auto& bid : mBids) {
-        cout << *bid << endl;
+    for(const auto& [k, v]: mAsks) {
+        cout << k << ": " << v << endl;
     }
 }

@@ -98,6 +98,10 @@ trading_system: CMakeFiles/trading_system.dir/build.make
 trading_system: OrderBookLib/libOrderBookLib.a
 trading_system: /opt/homebrew/lib/libcurlpp.dylib
 trading_system: /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd
+trading_system: /opt/homebrew/lib/libboost_system.dylib
+trading_system: /opt/homebrew/lib/libboost_thread.dylib
+trading_system: /opt/homebrew/Cellar/openssl@3/3.4.1/lib/libssl.dylib
+trading_system: /opt/homebrew/Cellar/openssl@3/3.4.1/lib/libcrypto.dylib
 trading_system: CMakeFiles/trading_system.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable trading_system"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/trading_system.dir/link.txt --verbose=$(VERBOSE)
