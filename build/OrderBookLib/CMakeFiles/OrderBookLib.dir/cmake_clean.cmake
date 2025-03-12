@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/OrderBookLib.dir/Ask.cpp.o"
+  "CMakeFiles/OrderBookLib.dir/Ask.cpp.o.d"
+  "CMakeFiles/OrderBookLib.dir/Bid.cpp.o"
+  "CMakeFiles/OrderBookLib.dir/Bid.cpp.o.d"
   "CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o"
   "CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o.d"
   "CMakeFiles/OrderBookLib.dir/Order.cpp.o"

@@ -789,6 +789,7 @@ CMakeFiles/trading_system.dir/main.cpp.o: /Users/zakariyasattar/crypto_algo/main
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/print \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/queue \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/ratio \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/sstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/stack \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/stddef.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/stdexcept \
@@ -958,6 +959,8 @@ CMakeFiles/trading_system.dir/main.cpp.o: /Users/zakariyasattar/crypto_algo/main
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stdarg.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stdint.h \
+  /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.h \
+  /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.h \
   /Users/zakariyasattar/crypto_algo/OrderBookLib/Order.h \
   /Users/zakariyasattar/crypto_algo/OrderBookLib/OrderBook.h
 
@@ -965,6 +968,8 @@ CMakeFiles/trading_system.dir/main.cpp.o: /Users/zakariyasattar/crypto_algo/main
 /Users/zakariyasattar/crypto_algo/OrderBookLib/OrderBook.h:
 
 /Users/zakariyasattar/crypto_algo/OrderBookLib/Order.h:
+
+/Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.h:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stdint.h:
 
@@ -2132,6 +2137,8 @@ CMakeFiles/trading_system.dir/main.cpp.o: /Users/zakariyasattar/crypto_algo/main
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/has_single_bit.h:
 
+/Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/string.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ios/fpos.h:
@@ -2487,6 +2494,8 @@ CMakeFiles/trading_system.dir/main.cpp.o: /Users/zakariyasattar/crypto_algo/main
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/promote.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_partial_sort.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/sstream:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_find_end.h:
 

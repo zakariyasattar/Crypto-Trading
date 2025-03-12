@@ -107,12 +107,12 @@ OrderBookLib/clean: OrderBookLib/CMakeFiles/OrderBookLib.dir/clean
 CMakeFiles/trading_system.dir/all: OrderBookLib/CMakeFiles/OrderBookLib.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=5,6 "Built target trading_system"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=7,8 "Built target trading_system"
 .PHONY : CMakeFiles/trading_system.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/trading_system.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/trading_system.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 0
 .PHONY : CMakeFiles/trading_system.dir/rule
@@ -124,7 +124,7 @@ trading_system: CMakeFiles/trading_system.dir/rule
 # codegen rule for target.
 CMakeFiles/trading_system.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/trading_system.dir/build.make CMakeFiles/trading_system.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=5,6 "Finished codegen for target trading_system"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=7,8 "Finished codegen for target trading_system"
 .PHONY : CMakeFiles/trading_system.dir/codegen
 
 # clean rule for target.
@@ -139,12 +139,12 @@ CMakeFiles/trading_system.dir/clean:
 OrderBookLib/CMakeFiles/OrderBookLib.dir/all:
 	$(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/depend
 	$(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=1,2,3,4 "Built target OrderBookLib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target OrderBookLib"
 .PHONY : OrderBookLib/CMakeFiles/OrderBookLib.dir/all
 
 # Build rule for subdir invocation for target.
 OrderBookLib/CMakeFiles/OrderBookLib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OrderBookLib/CMakeFiles/OrderBookLib.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zakariyasattar/crypto_algo/build/CMakeFiles 0
 .PHONY : OrderBookLib/CMakeFiles/OrderBookLib.dir/rule
@@ -156,7 +156,7 @@ OrderBookLib: OrderBookLib/CMakeFiles/OrderBookLib.dir/rule
 # codegen rule for target.
 OrderBookLib/CMakeFiles/OrderBookLib.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target OrderBookLib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Finished codegen for target OrderBookLib"
 .PHONY : OrderBookLib/CMakeFiles/OrderBookLib.dir/codegen
 
 # clean rule for target.

@@ -240,6 +240,9 @@ OrderBookLib_BINARY_DIR:STATIC=/Users/zakariyasattar/crypto_algo/cmake-build-deb
 //Value Computed by CMake
 OrderBookLib_IS_TOP_LEVEL:STATIC=OFF
 
+//Dependencies for the target
+OrderBookLib_LIB_DEPENDS:STATIC=general;/opt/homebrew/lib/libcurlpp.dylib;general;/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd;
+
 //Value Computed by CMake
 OrderBookLib_SOURCE_DIR:STATIC=/Users/zakariyasattar/crypto_algo/OrderBookLib
 

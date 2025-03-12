@@ -1254,6 +1254,18 @@
 			"value" : "OFF"
 		},
 		{
+			"name" : "OrderBookLib_LIB_DEPENDS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Dependencies for the target"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "general;/opt/homebrew/lib/libcurlpp.dylib;general;/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd;"
+		},
+		{
 			"name" : "OrderBookLib_SOURCE_DIR",
 			"properties" : 
 			[

@@ -74,14 +74,14 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "OrderBookLib::@fa10e8a06fc36b4cb695",
-					"jsonFile" : "target-OrderBookLib-Debug-d19542ac06d4a68f80d1.json",
+					"jsonFile" : "target-OrderBookLib-Debug-3f5b42f177a53d1c9637.json",
 					"name" : "OrderBookLib",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "trading_system::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-trading_system-Debug-bd40950d9ff4d718a060.json",
+					"jsonFile" : "target-trading_system-Debug-836b20bd114a760adade.json",
 					"name" : "trading_system",
 					"projectIndex" : 0
 				}

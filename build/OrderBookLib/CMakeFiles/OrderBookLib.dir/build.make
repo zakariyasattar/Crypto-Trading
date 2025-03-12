@@ -114,11 +114,41 @@ OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.s"
 	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zakariyasattar/crypto_algo/OrderBookLib/DataIngestion.cpp -o CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.s
 
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o: OrderBookLib/CMakeFiles/OrderBookLib.dir/flags.make
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o: /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.cpp
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o: OrderBookLib/CMakeFiles/OrderBookLib.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o -MF CMakeFiles/OrderBookLib.dir/Ask.cpp.o.d -o CMakeFiles/OrderBookLib.dir/Ask.cpp.o -c /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.cpp
+
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/OrderBookLib.dir/Ask.cpp.i"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.cpp > CMakeFiles/OrderBookLib.dir/Ask.cpp.i
+
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/OrderBookLib.dir/Ask.cpp.s"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zakariyasattar/crypto_algo/OrderBookLib/Ask.cpp -o CMakeFiles/OrderBookLib.dir/Ask.cpp.s
+
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o: OrderBookLib/CMakeFiles/OrderBookLib.dir/flags.make
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o: /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.cpp
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o: OrderBookLib/CMakeFiles/OrderBookLib.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o -MF CMakeFiles/OrderBookLib.dir/Bid.cpp.o.d -o CMakeFiles/OrderBookLib.dir/Bid.cpp.o -c /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.cpp
+
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/OrderBookLib.dir/Bid.cpp.i"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.cpp > CMakeFiles/OrderBookLib.dir/Bid.cpp.i
+
+OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/OrderBookLib.dir/Bid.cpp.s"
+	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zakariyasattar/crypto_algo/OrderBookLib/Bid.cpp -o CMakeFiles/OrderBookLib.dir/Bid.cpp.s
+
 # Object files for target OrderBookLib
 OrderBookLib_OBJECTS = \
 "CMakeFiles/OrderBookLib.dir/Order.cpp.o" \
 "CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o" \
-"CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o"
+"CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o" \
+"CMakeFiles/OrderBookLib.dir/Ask.cpp.o" \
+"CMakeFiles/OrderBookLib.dir/Bid.cpp.o"
 
 # External object files for target OrderBookLib
 OrderBookLib_EXTERNAL_OBJECTS =
@@ -126,9 +156,11 @@ OrderBookLib_EXTERNAL_OBJECTS =
 OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.o
 OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o
 OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/DataIngestion.cpp.o
+OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o
+OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o
 OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make
 OrderBookLib/libOrderBookLib.a: OrderBookLib/CMakeFiles/OrderBookLib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libOrderBookLib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/zakariyasattar/crypto_algo/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX static library libOrderBookLib.a"
 	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && $(CMAKE_COMMAND) -P CMakeFiles/OrderBookLib.dir/cmake_clean_target.cmake
 	cd /Users/zakariyasattar/crypto_algo/build/OrderBookLib && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/OrderBookLib.dir/link.txt --verbose=$(VERBOSE)
 

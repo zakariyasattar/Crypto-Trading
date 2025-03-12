@@ -19,16 +19,19 @@ using namespace std;
 */
 
 void OrderBook::initData() {
+    // Ingest data from Alpaca
     DataIngestion di {};
-    di.populate(bids, asks);
+    di.populate(mBids, mAsks);
+
+    DisplayOrderBook();
 }
 
 void OrderBook::DisplayOrderBook() {
-    for(const Order& ask : asks) {
-        cout << ask << endl;
+    for(const auto& ask : mAsks) {
+        cout << *ask << endl;
     }
-
-    // for(const Order& bid : bids) {
-    //     cout << bid << endl;
-    // }
+    
+    for(const auto& bid : mBids) {
+        cout << *bid << endl;
+    }
 }

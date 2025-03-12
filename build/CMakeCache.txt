@@ -234,11 +234,17 @@ CURL_LIBRARY_DEBUG:FILEPATH=CURL_LIBRARY_DEBUG-NOTFOUND
 //Path to a library.
 CURL_LIBRARY_RELEASE:FILEPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd
 
+//The directory containing a CMake configuration file for JSON.
+JSON_DIR:PATH=JSON_DIR-NOTFOUND
+
 //Value Computed by CMake
 OrderBookLib_BINARY_DIR:STATIC=/Users/zakariyasattar/crypto_algo/build/OrderBookLib
 
 //Value Computed by CMake
 OrderBookLib_IS_TOP_LEVEL:STATIC=OFF
+
+//Dependencies for the target
+OrderBookLib_LIB_DEPENDS:STATIC=general;/opt/homebrew/lib/libcurlpp.dylib;general;/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd;
 
 //Value Computed by CMake
 OrderBookLib_SOURCE_DIR:STATIC=/Users/zakariyasattar/crypto_algo/OrderBookLib

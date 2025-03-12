@@ -10,23 +10,24 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 
 class Order {
-private:
-    uint64_t shares;
+protected:
+
+    // shares of BTC are double
+    double shares;
     double price;
-    bool bid;
 
 public:
+    Order(double s, double p) : shares (s), price (p) {};
 
-    // Constructor
-    Order(uint64_t shares, float price, bool bid) : shares (shares), price (price), bid (bid) {};
+    virtual ~Order() = default;
 
-    // Overload << operator to allow direct printing of object
-    friend std::ostream& operator<<(std::ostream& os, const Order& order) {
-        std::string str { order.bid ? "Bid" : "Ask" };
-        
-        os << order.shares << " " << order.price << " " << str;
+    virtual void print(std::ostream& os) const {}
+
+    friend std::ostream& operator<<(std::ostream& os, Order& order) {
+        order.print(os);
         return os;
     }
 

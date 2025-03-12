@@ -130,6 +130,54 @@ OrderBookLib/fast:
 	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/build
 .PHONY : OrderBookLib/fast
 
+Ask.o: Ask.cpp.o
+.PHONY : Ask.o
+
+# target to build an object file
+Ask.cpp.o:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o
+.PHONY : Ask.cpp.o
+
+Ask.i: Ask.cpp.i
+.PHONY : Ask.i
+
+# target to preprocess a source file
+Ask.cpp.i:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.i
+.PHONY : Ask.cpp.i
+
+Ask.s: Ask.cpp.s
+.PHONY : Ask.s
+
+# target to generate assembly for a file
+Ask.cpp.s:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.s
+.PHONY : Ask.cpp.s
+
+Bid.o: Bid.cpp.o
+.PHONY : Bid.o
+
+# target to build an object file
+Bid.cpp.o:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o
+.PHONY : Bid.cpp.o
+
+Bid.i: Bid.cpp.i
+.PHONY : Bid.i
+
+# target to preprocess a source file
+Bid.cpp.i:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.i
+.PHONY : Bid.cpp.i
+
+Bid.s: Bid.cpp.s
+.PHONY : Bid.s
+
+# target to generate assembly for a file
+Bid.cpp.s:
+	cd /Users/zakariyasattar/crypto_algo/build && $(MAKE) $(MAKESILENT) -f OrderBookLib/CMakeFiles/OrderBookLib.dir/build.make OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.s
+.PHONY : Bid.cpp.s
+
 DataIngestion.o: DataIngestion.cpp.o
 .PHONY : DataIngestion.o
 
@@ -211,6 +259,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... OrderBookLib"
+	@echo "... Ask.o"
+	@echo "... Ask.i"
+	@echo "... Ask.s"
+	@echo "... Bid.o"
+	@echo "... Bid.i"
+	@echo "... Bid.s"
 	@echo "... DataIngestion.o"
 	@echo "... DataIngestion.i"
 	@echo "... DataIngestion.s"

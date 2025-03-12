@@ -7,14 +7,18 @@
 
 #pragma once
 
+#include "Bid.h"
+#include "Ask.h"
 #include "Order.h"
+
 #include <vector>
+#include <memory>
 
 class OrderBook {
 
 private:
-    std::vector<Order> bids;
-    std::vector<Order> asks;
+    std::vector<std::unique_ptr<Order>> mBids;
+    std::vector<std::unique_ptr<Order>> mAsks;
 
 public:
 
