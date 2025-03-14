@@ -30,14 +30,45 @@ void OrderBook::DisplayOrderBook() {
     // Clear the screen
     std::cout << CLEAR_SCREEN;
     
-    for(const auto& [k, v]: mAsks) {
-        cout << "[Ask] " << k << ": " << v << endl;
-    }
-
-    // double bid_ask_spread { (mAsks.begin()->first - mBids.begin()->first) / mAsks.begin()->first };
-    // cout << bid_ask_spread << endl;
+    // Display header
+    std::cout << "======== BTC/USD ORDER BOOK ========" << std::endl;
+    std::cout << "Updated: " << getCurrentTimestamp() << std::endl << endl;
     
-    for(const auto& [k, v]: mBids) {
-        cout << "[BID] " << k << ": " << v << endl;
+    // Format column headers
+    std::cout << std::left
+              << std::setw(10) << "Order Type" << " | "
+              << std::right
+              << std::setw(12) << "Price" << " | "
+              << std::setw(12) << "Size" << std::endl;
+    
+    std::cout << "---------------------------------------" << std::endl;
+    
+    // Display asks
+    for(const auto& [price, size]: mAsks) {
+        std::cout << std::left 
+                  << std::setw(10) << "[Ask]" << " | "
+                  << std::right
+                  << std::fixed << std::setprecision(2) << std::setw(12) << price << " | "
+                  << std::fixed << std::setprecision(6) << std::setw(12) << size << std::endl;
     }
+    
+    // Display bids
+    for(const auto& [price, size]: mBids) {
+        std::cout << std::left 
+                  << std::setw(10) << "[BID]" << " | "
+                  << std::right
+                  << std::fixed << std::setprecision(2) << std::setw(12) << price << " | "
+                  << std::fixed << std::setprecision(6) << std::setw(12) << size << std::endl;
+    }
+}
+
+// Helper function to get current timestamp
+string OrderBook::getCurrentTimestamp() {
+    auto now = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::to_time_t(now);
+    std::string timestamp = std::ctime(&time);
+
+    // Remove newline character
+    timestamp.pop_back();
+    return timestamp;
 }

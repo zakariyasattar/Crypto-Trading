@@ -36,5 +36,7 @@ public:
     auto& GetAsks() { return mAsks; }
     auto& GetBids() { return mBids; }
 
+    // return current timestamp
+    std::string getCurrentTimestamp();
 };
 
