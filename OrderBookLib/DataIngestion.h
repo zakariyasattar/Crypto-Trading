@@ -28,24 +28,21 @@ class DataIngestion {
 private:
     OrderBook& mOrderBook;
 
-    std::string api_key;
-    std::string api_secret;
     websocketpp::connection_hdl hdl;
     tls_client ws_client;
 
-    // key: price, value: size
-    std::map<double, double>& mBids;
-    std::map<double, double>& mAsks;
-
 public:
 
-    DataIngestion(OrderBook& ob, const std::string& api_key, const std::string& api_secret, std::map<double, double>& bids, std::map<double, double>& asks) : 
-        mOrderBook(ob), api_key (api_key), api_secret (api_secret), mBids (bids), mAsks (asks) { 
-        };
+    // Pass mOrderBook to have access to OrderBook methods
+    DataIngestion(OrderBook& ob) : mOrderBook(ob) {};
 
+    // Use auto for different map sorting types
     // Populate bids and asks of OrderBook by reference
-    void populate(json obj);
+    void Populate(json obj, auto& orderMap);
 
     // Establish connection to Alpaca WebSocket
-    void connect();
+    void Connect();
+
+    // Build OrderBook based on JSON response
+    void BuildOrderBook(json response);
 };

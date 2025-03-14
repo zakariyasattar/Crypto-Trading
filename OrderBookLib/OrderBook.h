@@ -19,7 +19,7 @@ class OrderBook {
 
 private:
     // key: price, value: shares
-    std::map<double, double> mBids;
+    std::map<double, double, std::greater<double>> mBids;
     std::map<double, double> mAsks;
 
 public:
@@ -32,6 +32,9 @@ public:
 
     // Print out OrderBook
     void DisplayOrderBook();
+
+    auto& GetAsks() { return mAsks; }
+    auto& GetBids() { return mBids; }
 
 };
 

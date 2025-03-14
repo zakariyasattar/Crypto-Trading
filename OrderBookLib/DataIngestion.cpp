@@ -28,9 +28,12 @@
 using json = nlohmann::json;
 using namespace std;
 
+const string api_key { "PKWTH6N3SM1XALKB870E" };
+const string api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
+
 typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;
 
-void DataIngestion::connect() {
+void DataIngestion::Connect() {
     try {
         tls_client ws_client;
         ws_client.init_asio();
@@ -58,9 +61,8 @@ void DataIngestion::connect() {
         // Set message handler (when a message is received)
         ws_client.set_message_handler([this](websocketpp::connection_hdl, tls_client::message_ptr msg) {
             json response = json::parse(msg->get_payload());
-            
-            populate(json::parse(response.dump(2)));
-            mOrderBook.DisplayOrderBook();
+
+            BuildOrderBook(response);
 
             // Subscribe after authentication success
             if (response[0]["T"] == "success" && response[0]["msg"] == "authenticated") {
@@ -88,32 +90,45 @@ void DataIngestion::connect() {
     }
 }
 
-// multimap: elems sorted by key, self-balancing red-black tree
+// 
+void DataIngestion::BuildOrderBook(json response) {
+    // this is bringing in an empty map everytime
+    map<double, double>& asks { mOrderBook.GetAsks() };
+    map<double, double, greater<double>>& bids { mOrderBook.GetBids() };
 
-// map will map price-level to size
-// map<double, double> asks
+    json asksObj { json::parse(response.dump(2))[0]["a"] };
+    json bidsObj { json::parse(response.dump(2))[0]["b"] };
+    
+    // Populate Asks
+    Populate(asksObj, asks);
 
-// steps:
-//  - Build initial maps, for every bid/ask, create map entry for each price level
-//  - if certain order gets removed, (s = 0), remove price level
-//  - otherwise, if it gets updated, update it
+    // Populate Bids
+    Populate(bidsObj, bids);
+
+
+    // Display Orderbook
+    mOrderBook.DisplayOrderBook();
+}
 
 // Populate/Update multimaps according to webhook data
-void DataIngestion::populate(json obj) {
-    json askObj { obj[0]["a"] };
-    json bidObj { obj[0]["b"] };
+void DataIngestion::Populate(json obj, auto& orderMap) {
+    int desiredMapSize { 10 };
 
-    for(const auto& o : askObj) {
+    for(const auto& o : obj) {
         double size { o["s"] };
         double price { o["p"] };
 
-        mAsks[price] += size;
-    }
+        if(size == 0) {
+            orderMap.erase(price);
+        }
+        else orderMap[price] = size;
 
-    for(const auto& o : bidObj) {
-        double size { o["s"] };
-        double price { o["p"] };
+        // keep map at desiredMapSize price points only
+        if(orderMap.size() > desiredMapSize) {
+            auto it = orderMap.end();
+            it--;
 
-        mBids[price] += size;
+            orderMap.erase(it);
+        }
     }
 }

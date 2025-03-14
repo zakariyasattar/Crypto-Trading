@@ -1,6 +1,0 @@
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/CMakeFiles/trading_system.dir
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/OrderBookLib/CMakeFiles/OrderBookLib.dir
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/OrderBookLib/CMakeFiles/edit_cache.dir
-/Users/zakariyasattar/crypto_algo/cmake-build-debug/OrderBookLib/CMakeFiles/rebuild_cache.dir

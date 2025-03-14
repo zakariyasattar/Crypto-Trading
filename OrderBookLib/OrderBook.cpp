@@ -4,6 +4,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <stdlib.h>
 
 #include "OrderBook.h"
@@ -12,30 +13,31 @@
 
 using namespace std;
 
-/*
- * OrderBook will have a vector of bids, a vector of asks
- * 
- *
-*/
+// ANSI escape sequence to clear screen and move cursor to top-left
+#define CLEAR_SCREEN "\033[2J\033[1;1H"
 
 void OrderBook::initData() {
     // Ingest data from Alpaca
-    const string api_key { "PKWTH6N3SM1XALKB870E" };
-    const string api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
 
     // Instantiate OrderBook with Data from API
-    DataIngestion engine { *this, api_key, api_secret, mBids, mAsks };
-    engine.connect();
+    DataIngestion engine { *this };
 
-    DisplayOrderBook();
+    // Connect to webhook and display data
+    engine.Connect();
 }
 
 void OrderBook::DisplayOrderBook() {
-    for(const auto& [k, v]: mAsks) {
-        cout << "[Ask]" << k << ": " << v << endl;
-    }
+    // Clear the screen
+    std::cout << CLEAR_SCREEN;
     
     for(const auto& [k, v]: mAsks) {
-        cout << "[BID]" << k << ": " << v << endl;
+        cout << "[Ask] " << k << ": " << v << endl;
+    }
+
+    // double bid_ask_spread { (mAsks.begin()->first - mBids.begin()->first) / mAsks.begin()->first };
+    // cout << bid_ask_spread << endl;
+    
+    for(const auto& [k, v]: mBids) {
+        cout << "[BID] " << k << ": " << v << endl;
     }
 }
