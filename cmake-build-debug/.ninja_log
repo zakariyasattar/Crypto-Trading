@@ -1,7 +1,0 @@
-# ninja log v6
-4	674	1741723679071327820	OrderBookLib/CMakeFiles/OrderBookLib.dir/Order.cpp.o	22e4a3f6d7263762
-5	666	1741723679072120442	OrderBookLib/CMakeFiles/OrderBookLib.dir/Ask.cpp.o	b8909e7683127816
-5	700	1741723679072232192	OrderBookLib/CMakeFiles/OrderBookLib.dir/Bid.cpp.o	b24dd6c08c9ef15b
-3	635	1741723759658042356	OrderBookLib/CMakeFiles/OrderBookLib.dir/OrderBook.cpp.o	f2aac442635edd4f
-5	697	1741723679072332317	CMakeFiles/trading_system.dir/main.cpp.o	3f5fa12fce26b86e
-452	466	1741715818882532552	OrderBookLib/libOrderBookLib.a	57575d274a5b303

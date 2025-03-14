@@ -6,7 +6,7 @@
 # Ignore build directories
 /build/
 */build/
-cmake_build_debug/
+cmake-build-debug/
 
 # Ignore CMake files
 CMakeCache.txt
