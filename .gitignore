@@ -1,4 +1,35 @@
-/.idea
-/.vscode
-/build
-/cmake_build_debug
+# Ignore IDE/editor specific files
+.idea/
+.vscode/
+*.code-workspace
+
+# Ignore build directories
+/build/
+*/build/
+cmake_build_debug/
+
+# Ignore CMake files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+CMakeLists.txt.user
+cmake_install.cmake
+compile_commands.json
+
+# Ignore binary and object files
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+
+# Ignore logs and other temp files
+*.log
+*.tmp
+*.swp
+*.swo
