@@ -19,8 +19,8 @@ class OrderBook {
 
 private:
     // key: price, value: shares
-    std::multimap<double, double> mBids;
-    std::multimap<double, double> mAsks;
+    std::map<double, double> mBids;
+    std::map<double, double> mAsks;
 
 public:
 

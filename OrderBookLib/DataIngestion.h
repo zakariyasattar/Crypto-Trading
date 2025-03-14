@@ -12,9 +12,7 @@
 #include <vector>
 #include <memory>
 
-#include "Order.h"
-#include "Bid.h"
-#include "Ask.h"
+#include "OrderBook.h"
 
 #define ASIO_STANDALONE // Standalone ASIO instead of Boost ASIO
 
@@ -28,22 +26,25 @@ typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;
 
 class DataIngestion {
 private:
+    OrderBook& mOrderBook;
+
     std::string api_key;
     std::string api_secret;
     websocketpp::connection_hdl hdl;
     tls_client ws_client;
 
+    // key: price, value: size
+    std::map<double, double>& mBids;
+    std::map<double, double>& mAsks;
+
 public:
 
-    DataIngestion(const std::string& api_key, const std::string& api_secret) : api_key (api_key), api_secret (api_secret) {};
+    DataIngestion(OrderBook& ob, const std::string& api_key, const std::string& api_secret, std::map<double, double>& bids, std::map<double, double>& asks) : 
+        mOrderBook(ob), api_key (api_key), api_secret (api_secret), mBids (bids), mAsks (asks) { 
+        };
 
     // Populate bids and asks of OrderBook by reference
-    void populate(std::multimap<double, double>& bids, std::multimap<double, double>& asks);
-
-    // Get raw order book data as JSON string
-    std::string fetchOrderBookStr();
-
-    void build(std::multimap<double, double>& orders, json obj, bool bids);
+    void populate(json obj);
 
     // Establish connection to Alpaca WebSocket
     void connect();

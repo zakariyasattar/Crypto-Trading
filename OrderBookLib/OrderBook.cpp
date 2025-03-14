@@ -23,18 +23,19 @@ void OrderBook::initData() {
     const string api_key { "PKWTH6N3SM1XALKB870E" };
     const string api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
 
-    DataIngestion di { api_key, api_secret };
-    di.populate(mBids, mAsks);
+    // Instantiate OrderBook with Data from API
+    DataIngestion engine { *this, api_key, api_secret, mBids, mAsks };
+    engine.connect();
 
     DisplayOrderBook();
 }
 
 void OrderBook::DisplayOrderBook() {
     for(const auto& [k, v]: mAsks) {
-        cout << k << ": " << v << endl;
+        cout << "[Ask]" << k << ": " << v << endl;
     }
     
     for(const auto& [k, v]: mAsks) {
-        cout << k << ": " << v << endl;
+        cout << "[BID]" << k << ": " << v << endl;
     }
 }
