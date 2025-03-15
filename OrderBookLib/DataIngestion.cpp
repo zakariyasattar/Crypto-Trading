@@ -21,7 +21,6 @@
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 
-
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
@@ -29,6 +28,7 @@
 #define ASIO_STANDALONE // Standalone ASIO instead of Boost ASIO
 
 #include <websocketpp/config/asio_client.hpp>
+#include <websocketpp/common/connection_hdl.hpp>
 #include <websocketpp/client.hpp>
 
 #include <../include/json.hpp>
@@ -48,8 +48,41 @@ typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
 // Binance US WebSocket Endpoint
 const std::string binance_ws_url = "wss://stream.binance.us:9443/ws/btcusdt@depth";
 
+// Connect to Binance exchange for order book data
+void DataIngestion::Connect() {
+    // Build initial data snapshot
+    json initialOrderBookJSON { GetInitialOrderBook() };
+    BuildOrderBook(initialOrderBookJSON);
+
+    // Receive WebSocket updates
+    UpdateBook();
+}
+
+json DataIngestion::GetInitialOrderBook() {
+    // RAII cleanup
+    curlpp::Cleanup myCleanup;
+
+    // Set URL for Binance initial orderbook
+    curlpp::options::Url initialOrderBookURL { std::string{"https://api.binance.us/api/v3/depth?symbol=BTCUSDT&limit=1000"} };
+    curlpp::Easy initialOrderBookRequest { };
+    initialOrderBookRequest.setOpt(initialOrderBookURL);
+
+    // Route output to custom ostringstream
+    ostringstream os {};
+    initialOrderBookRequest.setOpt(curlpp::options::WriteStream(&os));
+
+    // Perform intial order book request
+    initialOrderBookRequest.perform();
+
+    // Convert to string and parse as json
+    std::string response = os.str();
+    const json initialOrderBookJSON { json::parse(response) };
+
+    return initialOrderBookJSON;
+}
+
 // Function to initialize SSL context (needed for Binance)
-context_ptr on_tls_init(websocketpp::connection_hdl hdl) {
+context_ptr DataIngestion::on_tls_init(websocketpp::connection_hdl hdl) {
     context_ptr ctx = websocketpp::lib::make_shared<websocketpp::lib::asio::ssl::context>(
         websocketpp::lib::asio::ssl::context::tlsv12
     );
@@ -65,35 +98,39 @@ context_ptr on_tls_init(websocketpp::connection_hdl hdl) {
     return ctx;
 }
 
-void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
-    const json response { json::parse(msg->get_payload()) };
-    cout << response["a"] << endl;
-    // BuildOrderBook(response);
+void DataIngestion::UpdateBook() {
+    try {
+        // Initialize WebSocket++ client
+        ws_client.init_asio();
+
+        // Bind member functions to allow access to class members
+        ws_client.set_tls_init_handler(std::bind(&DataIngestion::on_tls_init, this, std::placeholders::_1));
+        ws_client.set_message_handler(std::bind(&DataIngestion::on_message, this, std::placeholders::_1, std::placeholders::_2));
+
+        // Create WebSocket connection
+        websocketpp::lib::error_code ec;
+        tls_client::connection_ptr con = ws_client.get_connection(binance_ws_url, ec);
+        if (ec) {
+            std::cerr << "Connection Error: " << ec.message() << std::endl;
+            return;
+        }
+
+        // Connect and run in a separate thread
+        ws_client.connect(con);
+        std::thread ws_thread([&]() { ws_client.run(); });
+
+        std::cout << "Connected to Binance WebSocket. Listening for updates..." << std::endl;
+
+        // Keep main thread alive
+        ws_thread.join();
+    } catch (const std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 }
 
-// Connect to Binance exchange for order book data
-void DataIngestion::Connect() {
-
-    // RAII cleanup
-    curlpp::Cleanup myCleanup;
-
-
-    // Set URL for Binance initial orderbook
-    curlpp::options::Url initialOrderBookURL { std::string{"https://api.binance.us/api/v3/depth?symbol=BTCUSDT&limit=1000"} };
-    curlpp::Easy initialOrderBookRequest { };
-    initialOrderBookRequest.setOpt(initialOrderBookURL);
-
-    // Route output to custom ostringstream
-    ostringstream os {};
-    initialOrderBookRequest.setOpt(curlpp::options::WriteStream(&os));
-
-    // Perform intial order book request
-    initialOrderBookRequest.perform();
-
-    std::string response = os.str();
-    const json initialOrderBookJSON { json::parse(response) };
-
-    BuildOrderBook(initialOrderBookJSON);
+void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
+    const json response { json::parse(msg->get_payload()) };
+    BuildOrderBook(response);
 }
 
 // 
@@ -102,8 +139,11 @@ void DataIngestion::BuildOrderBook(const json& response) {
     map<double, double>& asks { mOrderBook.GetAsks() };
     map<double, double, greater<double>>& bids { mOrderBook.GetBids() };
 
-    json asksObj { json::parse(response.dump(2))["asks"] };
-    json bidsObj { json::parse(response.dump(2))["bids"] };
+    string askStr { response.contains("a") ? "a" : "asks" };
+    string bidStr { response.contains("b") ? "b" : "bids" };
+
+    json asksObj { json::parse(response.dump(2))[askStr] };
+    json bidsObj { json::parse(response.dump(2))[bidStr] };
     
     // Populate Asks
     Populate(asksObj, asks);

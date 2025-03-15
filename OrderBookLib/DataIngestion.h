@@ -18,6 +18,7 @@
 
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/client.hpp>
+#include <websocketpp/common/connection_hdl.hpp>
 
 #include <../include/json.hpp>
 
@@ -31,12 +32,14 @@ private:
     OrderBook& mOrderBook;
 
     websocketpp::connection_hdl hdl;
+
+    websocketpp::lib::shared_ptr<websocketpp::lib::thread> m_thread;
     tls_client ws_client;
 
 public:
 
     // Pass mOrderBook to have access to OrderBook methods
-    DataIngestion(OrderBook& ob) : mOrderBook(ob) {};
+    explicit DataIngestion(OrderBook& ob) : mOrderBook(ob) {};
 
     // Use auto for different map sorting types
     // Populate bids and asks of OrderBook by reference
@@ -49,4 +52,9 @@ public:
     void BuildOrderBook(const json& response);
 
     void on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg);
+    context_ptr on_tls_init(websocketpp::connection_hdl hdl);
+
+    void UpdateBook();
+
+    json GetInitialOrderBook();
 };

@@ -27,7 +27,7 @@ void OrderBook::initData() {
 
 void OrderBook::DisplayOrderBook() {
     // Clear the screen
-    std::cout << CLEAR_SCREEN;
+    std::cout << CLEAR_SCREEN << std::flush;
     
     // Display header
     std::cout << "======== BTC/USD ORDER BOOK ========" << std::endl;

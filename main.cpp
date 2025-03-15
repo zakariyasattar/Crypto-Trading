@@ -10,7 +10,6 @@
 
 int main() {
     OrderBook orderBook {};
-    orderBook.DisplayOrderBook();
 
     return 0;
 }
