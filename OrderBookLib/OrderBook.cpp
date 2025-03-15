@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include "OrderBook.h"
-#include "Order.h"
 #include "DataIngestion.h"
 
 using namespace std;

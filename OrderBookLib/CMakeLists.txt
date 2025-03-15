@@ -3,11 +3,8 @@ project(OrderBookLib)
 
 # Set the source files
 set(SOURCE_FILES
-    Order.cpp
     OrderBook.cpp
     DataIngestion.cpp
-    Ask.cpp
-    Bid.cpp
 )
 
 # Find CURL (libcurl)

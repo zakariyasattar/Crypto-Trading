@@ -1,77 +1,90 @@
 #include <stdlib.h>
 #include <iostream>
 
-template <typename T>
-class Vector {
-private:
-    size_t mCapacity;
-    size_t mSize;
-    T* ptr;
+// template <typename T>
+// class Vector {
+// private:
+//     size_t mCapacity;
+//     size_t mSize;
+//     std::vector<std::unique_ptr<T>> mNodes;
+//     T* ptr;
 
-public:
-    Vector() {
-        mCapacity = 0;
-        mSize = 0;
-        ptr = nullptr;
-    }
+// public:
+//     Vector() {
+//         mCapacity = 0;
+//         mSize = 0;
+//         ptr = nullptr;
+//     }
 
-    Vector(size_t size, T val) : mSize (size), mCapacity (size) {
-        T* arr = new T[mSize];
+//     Vector(size_t size, T val) : mSize (size), mCapacity (size) {
+//         T* arr = new T[mSize];
 
-        for(int i = 0; i < mSize; i++) {
-            arr[i] = val;
-        }
+//         for(int i = 0; i < mSize; i++) {
+//             arr[i] = val;
+//         }
 
-        ptr = arr;
-    }
+//         ptr = arr;
+//     }
 
-    Vector(size_t size) : mSize (size), mCapacity (size) {
-        T* arr = new T[size];
-        ptr = arr;
-    }
+//     Vector(size_t size) : mSize (size), mCapacity (size) {
+//         mNodes.reserve(size);
+//         ptr = mNodes[0];
+//     }
 
-    ~Vector() { delete[] ptr; }
+//     ~Vector() { delete[] ptr; }
 
-    size_t size() const { return mSize; }
+//     size_t size() const { return mSize; }
 
-    const T& operator[](int pos) {
-        if(pos > mSize) throw std::runtime_error("Out of Bounds");
-        return ptr[pos];
-    }
+//     const T& operator[](int pos) {
+//         if(pos > mSize) throw std::runtime_error("Out of Bounds");
+//         return *(mNodes[pos]);
+//     }
 
-    void push_back(T val) {
-        if(mSize == mCapacity) {
-            resize();
-        }
+//     void push_back(T val) {
 
-        ptr[mSize] = val;
-        mSize++;
-    }
+//         mNodes.push_back(std::make_unique<T>(val));
+//         mSize++;
+//     }
 
-    void resize() {
-        if(mCapacity == 0) mCapacity = 1;
-        else mCapacity *= 2;
+//     void resize() {
+//         if(mCapacity == 0) mCapacity = 1;
+//         else mCapacity *= 2;
 
-        T* newPtr = new T[mCapacity];
+//         T* newPtr = new T[mCapacity];
 
-        for(int i = 0; i < mSize; i++) {
-            newPtr[i] = ptr[i];
-        }
+//         for(int i = 0; i < mSize; i++) {
+//             newPtr[i] = ptr[i];
+//         }
 
-        delete[] ptr;
-        ptr = newPtr;
-    }
-};
+//         delete[] ptr;
+//         ptr = newPtr;
+//     }
+
+//     T* begin() {
+//         return ptr;
+//     }
+
+//     T* end() {
+//         return ptr + mSize;
+//     }
+// };
 
 using namespace std;
 
 int main() {
-    Vector<int> v (5, 4);
-    std::cout << v[3] << std::endl;
+    // Vector<int> v (5, 4);
 
-    v.push_back(7);
 
-    cout << v.size() << " " << v[3] << endl;
+
+    // int* it = v.begin();
+
+    // cout << *it << endl;
+
+    // v.push_back(5);
+
+    // cout << *it << endl;
+
+    cout << __cplusplus << endl;
 
     return 0;
 }

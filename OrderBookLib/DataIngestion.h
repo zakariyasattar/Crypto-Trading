@@ -22,7 +22,9 @@
 #include <../include/json.hpp>
 
 using json = nlohmann::json;
+
 typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;
+typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
 
 class DataIngestion {
 private:
@@ -38,11 +40,13 @@ public:
 
     // Use auto for different map sorting types
     // Populate bids and asks of OrderBook by reference
-    void Populate(json obj, auto& orderMap);
+    void Populate(const json& obj, auto& orderMap);
 
     // Establish connection to Alpaca WebSocket
     void Connect();
 
     // Build OrderBook based on JSON response
-    void BuildOrderBook(json response);
+    void BuildOrderBook(const json& response);
+
+    void on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg);
 };
