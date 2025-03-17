@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "OrderBook.h"
+#include "Order.h"
 
 #define ASIO_STANDALONE // Standalone ASIO instead of Boost ASIO
 

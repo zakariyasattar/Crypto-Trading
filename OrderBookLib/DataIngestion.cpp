@@ -6,6 +6,7 @@
 #include "DataIngestion.h"
 
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <vector>
 #include <stdlib.h>
@@ -44,9 +45,6 @@ const string binance_api_secret { "Ws41QPliZk0t6LU3eE0AtKTy3mN33qbIZGKpWQnz7P5ff
 
 typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;
 typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
-
-// Binance US WebSocket Endpoint
-const std::string binance_ws_url = "wss://stream.binance.us:9443/ws/btcusdt@depth";
 
 // Connect to Binance exchange for order book data
 void DataIngestion::Connect() {
@@ -107,6 +105,9 @@ void DataIngestion::UpdateBook() {
         ws_client.set_tls_init_handler(std::bind(&DataIngestion::on_tls_init, this, std::placeholders::_1));
         ws_client.set_message_handler(std::bind(&DataIngestion::on_message, this, std::placeholders::_1, std::placeholders::_2));
 
+        // Binance US WebSocket Endpoint
+        const std::string binance_ws_url = "wss://stream.binance.us:9443/ws";
+
         // Create WebSocket connection
         websocketpp::lib::error_code ec;
         tls_client::connection_ptr con = ws_client.get_connection(binance_ws_url, ec);
@@ -121,6 +122,19 @@ void DataIngestion::UpdateBook() {
 
         std::cout << "Connected to Binance WebSocket. Listening for updates..." << std::endl;
 
+        // Wait a bit before sending the subscription (give time to connect)
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        json subscribe_json = {
+            {"method", "SUBSCRIBE"},
+            {"params", {"btcusdt@depth@100ms", "btcusdt@ticker"}},
+            {"id", 1}
+        };
+        
+        // Convert JSON object to string before sending
+        std::string subscribe_message = subscribe_json.dump();
+        con->send(subscribe_message);
+
         // Keep main thread alive
         ws_thread.join();
     } catch (const std::exception &e) {
@@ -130,7 +144,15 @@ void DataIngestion::UpdateBook() {
 
 void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
     const json response { json::parse(msg->get_payload()) };
-    BuildOrderBook(response);
+
+    // ticker stream (current price)
+    if(response.contains("c")) {
+        double currPrice = stod(response["c"].get<string>());
+        mOrderBook.SetCurrentPrice(currPrice);
+    }
+    else { // depth stream (order book)
+        BuildOrderBook(response);
+    }
 }
 
 // 
@@ -152,7 +174,7 @@ void DataIngestion::BuildOrderBook(const json& response) {
     Populate(bidsObj, bids);
 
     // Display Orderbook
-    mOrderBook.DisplayOrderBook();
+    // mOrderBook.DisplayOrderBook();
 }
 
 // Populate/Update multimaps according to webhook data
