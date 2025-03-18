@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <mutex>
+#include <atomic>
 #include <iostream>
 #include <sstream>
 
@@ -21,19 +21,19 @@ private:
     std::map<double, double, std::greater<double>> mBids;
     std::map<double, double> mAsks;
 
-    double mCurrentPrice;
-
-    std::mutex mtx;
+    std::atomic<double> mCurrentPrice {};
 
 public:
     enum class Side {
         Buy,
-        Sell
+        Sell,
+        None
     };
     
     struct Order {
-        double price;
-        double size;
+        double price {};
+        double size {};
+        Side side { Side::None };
 
         friend std::ostream& operator<<(std::ostream& os, const Order& o) {
             os << o.size << " @ " << o.price;
@@ -45,7 +45,17 @@ public:
         Side side;
         double stop_loss;
         double exit_price;
+        double weight;
+
+        friend std::ostream& operator<<(std::ostream& os, const TradeDecision& td) {
+            std::string str { td.side == Side::Buy ? "Buy" : "Sell" };
+            os << str << " " << td.exit_price << " " << td.stop_loss << " " << td.weight;
+            return os;
+        }
     };
+
+    using TradeDecision = OrderBook::TradeDecision;
+    using Analysis = std::tuple<TradeDecision, TradeDecision, TradeDecision>;
 
     // class constructor
     OrderBook() { };
@@ -63,10 +73,10 @@ public:
     std::string getCurrentTimestamp();
 
     // Analyze OrderBook and decide what kind of trade to make
-    TradeDecision AnalyzeOrderBook();
+    Analysis AnalyzeOrderBook();
 
     // Calc VWAP deviation in order book, return prob of trade success
-    double CalcVWAPDev();
+    TradeDecision CalcVWAPDev();
 
     // must use template instead of auto
     template <typename T>
@@ -82,18 +92,18 @@ public:
     // first = price
     double GetMidPrice() { return (GetTopOrder(mAsks).price + GetTopOrder(mBids).price) / 2; };
 
-    double CalcVWAP();
+    std::pair<double, double> CalcVWAP(const auto& orderMap);
+
+    TradeDecision FindLargeNearbyOrder();
 
     // Getters and Setters with mutual exclusion for current price variable
     // Current price is modified concurrently, so mutex is needed
     void SetCurrentPrice(double price) {
-        std::unique_lock<std::mutex> lock(mtx);
-        mCurrentPrice = price;
+        mCurrentPrice.store(price, std::memory_order_relaxed);
     }
 
     double GetCurrentPrice() {
-        std::unique_lock<std::mutex> lock(mtx);
-        return mCurrentPrice;
+        return mCurrentPrice.load(std::memory_order_relaxed);
     }
 };
 

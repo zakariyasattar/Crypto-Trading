@@ -127,7 +127,7 @@ void DataIngestion::UpdateBook() {
 
         json subscribe_json = {
             {"method", "SUBSCRIBE"},
-            {"params", {"btcusdt@depth@100ms", "btcusdt@ticker"}},
+            {"params", {"btcusdt@depth@20ms", "btcusdt@ticker"}},
             {"id", 1}
         };
         

@@ -5,15 +5,17 @@
 
 using namespace std;
 
+using Analysis = std::tuple<OrderBook::TradeDecision, OrderBook::TradeDecision, OrderBook::TradeDecision>;
+
 void TradingAlgo::StartTrading() {
     while(true) {
-        OrderBook::TradeDecision analysis { mOrderBook.AnalyzeOrderBook() };
+        Analysis analysis { mOrderBook.AnalyzeOrderBook() };
 
         // mOrderBook.DisplayOrderBook();
         OrderBook::Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
         OrderBook::Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
 
-        cout << mOrderBook.GetCurrentPrice() << endl;
+        // mOrderBook.DisplayOrderBook();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
