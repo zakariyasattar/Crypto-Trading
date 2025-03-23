@@ -1,3 +1,9 @@
+/**
+ * @file TradingAlgo.cpp
+ * @author Zakariya Sattar
+ */
+
+
 #include "TradingAlgo.h"
 #include <OrderBook.h>
 #include <thread>
@@ -9,14 +15,13 @@ using Analysis = std::tuple<OrderBook::TradeDecision, OrderBook::TradeDecision, 
 
 void TradingAlgo::StartTrading() {
     while(true) {
-        Analysis analysis { mOrderBook.AnalyzeOrderBook() };
+        // Analysis analysis { mOrderBook.AnalyzeOrderBook() };
 
-        // mOrderBook.DisplayOrderBook();
-        OrderBook::Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
-        OrderBook::Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
+        // OrderBook::Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
+        // OrderBook::Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
+        
+        mOrderBook.DisplayOrderBook();
 
-        // mOrderBook.DisplayOrderBook();
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }

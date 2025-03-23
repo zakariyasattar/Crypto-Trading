@@ -13,6 +13,10 @@
 #include <atomic>
 #include <iostream>
 #include <sstream>
+#include <mutex>
+#include <condition_variable>
+
+#include "Enums.h"
 
 class OrderBook {
 
@@ -21,50 +25,36 @@ private:
     std::map<double, double, std::greater<double>> mBids;
     std::map<double, double> mAsks;
 
+    std::mutex& mMtx;
+    std::condition_variable& mCv;
+
+    bool mDataReceived {};
+
     std::atomic<double> mCurrentPrice {};
 
 public:
-    enum class Side {
-        Buy,
-        Sell,
-        None
-    };
-    
-    struct Order {
-        double price {};
-        double size {};
-        Side side { Side::None };
 
-        friend std::ostream& operator<<(std::ostream& os, const Order& o) {
-            os << o.size << " @ " << o.price;
-            return os;
-        }
-    };
-
-    struct TradeDecision {
-        Side side;
-        double stop_loss;
-        double exit_price;
-        double weight;
-
-        friend std::ostream& operator<<(std::ostream& os, const TradeDecision& td) {
-            std::string str { td.side == Side::Buy ? "Buy" : "Sell" };
-            os << str << " " << td.exit_price << " " << td.stop_loss << " " << td.weight;
-            return os;
-        }
-    };
-
-    using TradeDecision = OrderBook::TradeDecision;
+    using TradeDecision = Enums::TradeDecision;
     using Analysis = std::tuple<TradeDecision, TradeDecision, TradeDecision>;
 
     // class constructor
-    OrderBook() { };
+    OrderBook(std::mutex& mtx, std::condition_variable& cv) : mMtx(mtx), mCv(cv) { };
+
+    ~OrderBook() { 
+        mAsks.clear();
+        mBids.clear();
+    }
 
     // Pull data from source and populate member vectors
-    void initData();
+    void InitData();
 
     // Print out OrderBook
     void DisplayOrderBook();
+
+    // Methods to update OrderBook
+    void SetPricePoint(double price, double size, Enums::Side side);
+    void DeletePricePoint(double price, Enums::Side side);
+    void Shrink(auto& orderMap, int desiredMapSize);
 
     auto& GetAsks() { return mAsks; }
     auto& GetBids() { return mBids; }
@@ -75,12 +65,9 @@ public:
     // Analyze OrderBook and decide what kind of trade to make
     Analysis AnalyzeOrderBook();
 
-    // Calc VWAP deviation in order book, return prob of trade success
-    TradeDecision CalcVWAPDev();
-
     // must use template instead of auto
     template <typename T>
-    Order GetTopOrder(const T& orderMap) {
+    Enums::Order GetTopOrder(const T& orderMap) {
         auto it { orderMap.begin() };
 
         double price { it->first };
@@ -89,12 +76,23 @@ public:
         return {price, size};
     }
 
+    bool isEmpty() { return mAsks.size() == 0 || mBids.size() == 0; }
+
     // first = price
     double GetMidPrice() { return (GetTopOrder(mAsks).price + GetTopOrder(mBids).price) / 2; };
 
     std::pair<double, double> CalcVWAP(const auto& orderMap);
 
-    TradeDecision FindLargeNearbyOrder();
+    // 3 strategies
+
+    // Calc VWAP deviation in order book, return prob of trade success
+    TradeDecision CalcVWAPDev();
+
+    // Calc Imbalance between bid and ask volume in order book
+    TradeDecision CalcOrderBookImbalance();
+
+    // Find largest order within x amount of levels
+    TradeDecision FindLargeNearbyOrder(int levelsToCheck = 3);
 
     // Getters and Setters with mutual exclusion for current price variable
     // Current price is modified concurrently, so mutex is needed

@@ -6,9 +6,7 @@
  */
 
 #include <iostream>
-#include <thread>
 #include <mutex>
-#include <condition_variable>
 
 #include "OrderBookLib/OrderBook.h"
 #include "TradingAlgoLib/TradingAlgo.h"
@@ -16,39 +14,25 @@
 using namespace std;
 
 int main() {
-    mutex mtx{};
-    condition_variable cv {};
-    bool dataInitialized {};
+    std::condition_variable cv {};
+    std::mutex mtx {};
 
-    OrderBook orderBook {};
+    OrderBook orderBook {mtx, cv};
+    orderBook.InitData();
 
-    thread wsThread { [&]() {
-        // Give OrderBook WebSocket its own separate thread
-        orderBook.initData();
-        
-        { // wrap unique_lock in braces to force scope exit
-            std::unique_lock<std::mutex> lock(mtx); // std::unique_lock auto unlocks mutex once it exits scope
-            dataInitialized = true;
-        }
-
-        cv.notify_one();
-    } };
-
-    // Allows thread to run separately outside of main thread
-    wsThread.detach();
-
+    // Wait for OrderBook to InitData before running trading algo
     {
-        std::unique_lock<std::mutex> lock(mtx);
+        std::unique_lock<std::mutex> lock (mtx);
 
-        if(!dataInitialized) {
-            cv.wait_for(lock, std::chrono::seconds(2), [&] {
-                return dataInitialized;
-            });
-        }
+        // Re-check orderBook.isEmpty() because of spurious wake
+        cv.wait(lock, [&]() {
+            return !orderBook.isEmpty();
+        });
+
+        TradingAlgo algo { orderBook };
+        algo.StartTrading();
     }
 
-    TradingAlgo algo { orderBook };
-    algo.StartTrading();
 
     return 0;
 }

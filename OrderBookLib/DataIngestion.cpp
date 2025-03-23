@@ -16,6 +16,9 @@
 #include <thread>
 #include <ctime>
 #include <map>
+#include <typeinfo>
+
+#include "Enums.h"
 
 #include <curl/curl.h>
 #include <openssl/hmac.h>
@@ -40,8 +43,7 @@ using namespace std;
 const string alpaca_api_key { "PKWTH6N3SM1XALKB870E" };
 const string alpaca_api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
 
-const string binance_api_key { "X0ESxm8Kx5pak1LMvJSyqYek4dSKMWx3rfzKh3fWC146FujBmd8Tts08nT6bgTbW" };
-const string binance_api_secret { "Ws41QPliZk0t6LU3eE0AtKTy3mN33qbIZGKpWQnz7P5ff3r7m9wUtUn4x6DVfBxi" };
+const string coin_api_key { "e508df71-b919-4e7c-b062-79a517f1c54d" };
 
 typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;
 typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
@@ -49,8 +51,8 @@ typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
 // Connect to Binance exchange for order book data
 void DataIngestion::Connect() {
     // Build initial data snapshot
-    json initialOrderBookJSON { GetInitialOrderBook() };
-    BuildOrderBook(initialOrderBookJSON);
+    // json initialOrderBookJSON { GetInitialOrderBook() };
+    // BuildOrderBook(initialOrderBookJSON);
 
     // Receive WebSocket updates
     UpdateBook();
@@ -61,9 +63,15 @@ json DataIngestion::GetInitialOrderBook() {
     curlpp::Cleanup myCleanup;
 
     // Set URL for Binance initial orderbook
-    curlpp::options::Url initialOrderBookURL { std::string{"https://api.binance.us/api/v3/depth?symbol=BTCUSDT&limit=1000"} };
+    curlpp::options::Url initialOrderBookURL { std::string{"https://rest.coinapi.io/v1/orderbooks/BTC_USD/current"} };
+
     curlpp::Easy initialOrderBookRequest { };
     initialOrderBookRequest.setOpt(initialOrderBookURL);
+
+    std::list<std::string> headers;
+    headers.push_back("X-CoinAPI-Key: " + coin_api_key);
+    headers.push_back("Accept: application/json");  // Ensures JSON response
+    initialOrderBookRequest.setOpt<curlpp::options::HttpHeader>(headers);
 
     // Route output to custom ostringstream
     ostringstream os {};
@@ -79,7 +87,7 @@ json DataIngestion::GetInitialOrderBook() {
     return initialOrderBookJSON;
 }
 
-// Function to initialize SSL context (needed for Binance)
+// Function to initialize SSL context
 context_ptr DataIngestion::on_tls_init(websocketpp::connection_hdl hdl) {
     context_ptr ctx = websocketpp::lib::make_shared<websocketpp::lib::asio::ssl::context>(
         websocketpp::lib::asio::ssl::context::tlsv12
@@ -105,38 +113,41 @@ void DataIngestion::UpdateBook() {
         ws_client.set_tls_init_handler(std::bind(&DataIngestion::on_tls_init, this, std::placeholders::_1));
         ws_client.set_message_handler(std::bind(&DataIngestion::on_message, this, std::placeholders::_1, std::placeholders::_2));
 
-        // Binance US WebSocket Endpoint
-        const std::string binance_ws_url = "wss://stream.binance.us:9443/ws";
+        // Define on_open handler
+        ws_client.set_open_handler([this](websocketpp::connection_hdl hdl) {
+            std::cout << "WebSocket connection established.\n";
 
-        // Create WebSocket connection
+            nlohmann::json subscribe_json = {
+                {"type", "subscribe"},
+                {"heartbeat", true},
+                {"subscribe_data_type", {"book20", "quote"}},
+                {"subscribe_filter_asset_id", {"BTC/USD"}}
+            };
+
+            std::string subscribe_message = subscribe_json.dump();
+            ws_client.send(hdl, subscribe_message, websocketpp::frame::opcode::text);
+        });
+
+        // WebSocket Endpoint
+        const std::string ws_url = "wss://coinbase.ws-ds.md.coinapi.io/APIKEY-e508df71-b919-4e7c-b062-79a517f1c54d";
+
+        // Create connection
         websocketpp::lib::error_code ec;
-        tls_client::connection_ptr con = ws_client.get_connection(binance_ws_url, ec);
+        tls_client::connection_ptr con = ws_client.get_connection(ws_url, ec);
         if (ec) {
             std::cerr << "Connection Error: " << ec.message() << std::endl;
             return;
         }
 
-        // Connect and run in a separate thread
         ws_client.connect(con);
-        std::thread ws_thread([&]() { ws_client.run(); });
 
-        std::cout << "Connected to Binance WebSocket. Listening for updates..." << std::endl;
+        // Run WebSocket in its own thread
+        std::thread ws_thread([&]() {
+            ws_client.run();
+        });
 
-        // Wait a bit before sending the subscription (give time to connect)
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-
-        json subscribe_json = {
-            {"method", "SUBSCRIBE"},
-            {"params", {"btcusdt@depth@20ms", "btcusdt@ticker"}},
-            {"id", 1}
-        };
-        
-        // Convert JSON object to string before sending
-        std::string subscribe_message = subscribe_json.dump();
-        con->send(subscribe_message);
-
-        // Keep main thread alive
         ws_thread.join();
+        
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -145,12 +156,19 @@ void DataIngestion::UpdateBook() {
 void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
     const json response { json::parse(msg->get_payload()) };
 
+    string type { response["type"] };
+
     // ticker stream (current price)
-    if(response.contains("c")) {
-        double currPrice = stod(response["c"].get<string>());
+    if(type == "quote") {
+        double latestAskPrice { response["ask_price"].get<double>() };
+        double latestBidPrice { response["bid_price"].get<double>() };
+
+        // Calcuate current price from most recent bid/ask
+        double currPrice { (latestAskPrice + latestBidPrice) / 2 };
+
         mOrderBook.SetCurrentPrice(currPrice);
     }
-    else { // depth stream (order book)
+    else if(type == "book20") { // depth stream (order book)
         BuildOrderBook(response);
     }
 }
@@ -161,41 +179,34 @@ void DataIngestion::BuildOrderBook(const json& response) {
     map<double, double>& asks { mOrderBook.GetAsks() };
     map<double, double, greater<double>>& bids { mOrderBook.GetBids() };
 
-    string askStr { response.contains("a") ? "a" : "asks" };
-    string bidStr { response.contains("b") ? "b" : "bids" };
-
-    json asksObj { json::parse(response.dump(2))[askStr] };
-    json bidsObj { json::parse(response.dump(2))[bidStr] };
+    json asksObj { response["asks"] };
+    json bidsObj { response["bids"] };
     
     // Populate Asks
-    Populate(asksObj, asks);
+    Populate(asksObj, Enums::Side::Sell);
 
     // Populate Bids
-    Populate(bidsObj, bids);
+    Populate(bidsObj, Enums::Side::Buy);
 
     // Display Orderbook
     // mOrderBook.DisplayOrderBook();
 }
 
 // Populate/Update multimaps according to webhook data
-void DataIngestion::Populate(const json& obj, auto& orderMap) {
+void DataIngestion::Populate(const json& obj, Enums::Side side) {
     int desiredMapSize { 10 };
 
     for(const auto& o : obj) {
-        double price { std::stod(o[0].get<std::string>()) };
-        double size { std::stod(o[1].get<std::string>()) };
+        // cout << o["price"] << endl;
+        double price { o["price"].get<double>() };
+        double size { o["size"].get<double>() };
 
         if(size == 0) {
-            orderMap.erase(price);
+            // Delete element at price in either asks/bids 
+            mOrderBook.DeletePricePoint(price, side);
         }
-        else orderMap[price] = size;
-
-        // keep map at desiredMapSize price points only
-        if(orderMap.size() > desiredMapSize) {
-            auto it = orderMap.end();
-            it--;
-
-            orderMap.erase(it);
+        else {
+            mOrderBook.SetPricePoint(price, size, side);
         }
     }
 }

@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "OrderBook.h"
+#include "Enums.h"
 #include "Order.h"
 
 #define ASIO_STANDALONE // Standalone ASIO instead of Boost ASIO
@@ -44,7 +45,7 @@ public:
 
     // Use auto for different map sorting types
     // Populate bids and asks of OrderBook by reference
-    void Populate(const json& obj, auto& orderMap);
+    void Populate(const json& obj, Enums::Side side);
 
     // Establish connection to Alpaca WebSocket
     void Connect();
