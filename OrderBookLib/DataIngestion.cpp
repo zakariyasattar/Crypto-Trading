@@ -156,6 +156,8 @@ void DataIngestion::UpdateBook() {
 void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
     const json response { json::parse(msg->get_payload()) };
 
+    // cout << response << endl;
+
     string type { response["type"] };
 
     // ticker stream (current price)
@@ -197,7 +199,6 @@ void DataIngestion::Populate(const json& obj, Enums::Side side) {
     int desiredMapSize { 10 };
 
     for(const auto& o : obj) {
-        // cout << o["price"] << endl;
         double price { o["price"].get<double>() };
         double size { o["size"].get<double>() };
 

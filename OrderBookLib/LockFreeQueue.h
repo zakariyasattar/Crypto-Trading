@@ -1,31 +1,40 @@
 
 #include "Order.h"
+// #include "HazardPointer.h"
+
 #include <queue>
 #include <memory>
 #include <condition_variable>
+#include "Enums.h"
 
 // OrderQueue
 // All operations get placed in Queue, add, remove, modify, delete
 // get handled atomically
 
+using Operation = Enums::Operation;
+
 struct Node {
     Order order;
-    std::unique_ptr<Node> next;
+    Operation operation;
+    std::atomic<Node*> next;
 };
 
 class LockFreeQueue {
 private:
-    std::atomic<std::unique_ptr<Node>> mHead;
-    std::atomic<std::unique_ptr<Node>> mTail;
+    std::atomic<Node*> mHead;
+    std::atomic<Node*> mTail;
 
 public:
-    LockFreeQueue() {
-       Node dummy { Order(), nullptr };
+    LockFreeQueue();
+    void Push(const Order& order, const Operation& operation);
+    std::pair<Order, Operation> Pop();
 
-       mHead.store(std::make_unique<Node>(dummy));
-       mTail.store(std::make_unique<Node>(dummy));
+    ~LockFreeQueue() {
+        while(Node* node = mHead.load()) {
+            mHead.store(node->next);
+            delete node;
+        }
     }
 
-    void Push(const Order& order);
-    Order Pull();
+    void print();
 };

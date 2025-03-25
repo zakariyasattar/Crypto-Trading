@@ -34,7 +34,11 @@ void OrderBook::InitData() {
 }
 
 void OrderBook::DeletePricePoint(double price, Enums::Side side) {
+    std::cout << "Attempting to lock in DeletePricePoint\n";
     std::lock_guard<std::mutex> lock(mMtx);
+    std::cout << "Locked in DeletePricePoint\n";
+
+    cout << price << " " << endl;
 
     if(side == Enums::Side::Buy)
         mBids.erase(price);
@@ -43,7 +47,9 @@ void OrderBook::DeletePricePoint(double price, Enums::Side side) {
 }
 
 void OrderBook::SetPricePoint(double price, double size, Enums::Side side) {
+    std::cout << "Attempting to lock in SetPricePoint @ " << std::chrono::system_clock::now() << endl;
     std::lock_guard<std::mutex> lock(mMtx);
+    std::cout << "Locked in SetPricePoint\n";
 
     int desiredMapSize { 12 };
 
@@ -56,7 +62,7 @@ void OrderBook::SetPricePoint(double price, double size, Enums::Side side) {
         Shrink(mAsks, desiredMapSize);
     }
 
-    // Notify if both have at least one entry
+        // Notify if both have at least one entry
     if (!mAsks.empty() && !mBids.empty()) {
         mCv.notify_one();
     }
@@ -73,6 +79,10 @@ void OrderBook::Shrink(auto& orderMap, int desiredMapSize) {
 }
 
 void OrderBook::DisplayOrderBook() {
+    std::cout << "Attempting to lock in DisplayOrderBook @ " << std::chrono::system_clock::now() << endl;
+    std::lock_guard<std::mutex> lock(mMtx);
+    std::cout << "Locked in DisplayOrderBook\n";
+
     // Clear the screen
     std::cout << CLEAR_SCREEN << std::flush;
     

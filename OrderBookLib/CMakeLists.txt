@@ -5,6 +5,8 @@ project(OrderBookLib)
 set(SOURCE_FILES
     OrderBook.cpp
     DataIngestion.cpp
+    LockFreeQueue.cpp
+    Order.cpp
 )
 
 # Find CURL (libcurl)

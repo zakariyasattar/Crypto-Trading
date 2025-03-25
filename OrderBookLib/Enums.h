@@ -11,6 +11,12 @@ public:
         None
     };
 
+    enum class Operation {
+        Set,
+        Delete,
+        None
+    };
+
     struct Order {
         double price {};
         double size {};

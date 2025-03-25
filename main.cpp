@@ -11,27 +11,40 @@
 #include "OrderBookLib/OrderBook.h"
 #include "TradingAlgoLib/TradingAlgo.h"
 
+#include "OrderBookLib/LockFreeQueue.h"
+
 using namespace std;
 
 int main() {
-    std::condition_variable cv {};
-    std::mutex mtx {};
+    LockFreeQueue q {};
+    Order order {15.5, 3.0, Side::Ask};
+    Order order1 {2.0, 2.0, Side::Ask};
 
-    OrderBook orderBook {mtx, cv};
-    orderBook.InitData();
+    q.Push(order, Operation::None);
+    q.Push(order1, Operation::None);
 
-    // Wait for OrderBook to InitData before running trading algo
-    {
-        std::unique_lock<std::mutex> lock (mtx);
+    q.print();
 
-        // Re-check orderBook.isEmpty() because of spurious wake
-        cv.wait(lock, [&]() {
-            return !orderBook.isEmpty();
-        });
+    cout << q.Pop().first << endl;
 
-        TradingAlgo algo { orderBook };
-        algo.StartTrading();
-    }
+    // std::condition_variable cv {};
+    // std::mutex mtx {};
+
+    // OrderBook orderBook {mtx, cv};
+    // orderBook.InitData();
+
+    // // Wait for OrderBook to InitData before running trading algo
+    // {
+    //     std::unique_lock<std::mutex> lock (mtx);
+
+    //     // Re-check orderBook.isEmpty() because of spurious wake
+    //     cv.wait(lock, [&]() {
+    //         return !orderBook.isEmpty();
+    //     });
+
+    //     TradingAlgo algo { orderBook };
+    //     algo.StartTrading();
+    // }
 
 
     return 0;
