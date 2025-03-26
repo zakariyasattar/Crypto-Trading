@@ -18,24 +18,49 @@
 using namespace std;
 
 int main() {
-    // std::condition_variable cv {};
-    // std::mutex mtx {};
+    // LockFreeQueue lfq;
 
-    // OrderBook orderBook {mtx, cv};
-    // orderBook.InitData();
+    // Order order {1.0, 1.0, Side::Buy};
 
-    // // Wait for OrderBook to InitData before running trading algo
-    // {
-    //     std::unique_lock<std::mutex> lock (mtx);
+    // lfq.Push(order, Operation::Delete);
+    // lfq.Push(order, Operation::Delete);
+    // lfq.Push(order, Operation::Delete);
 
-    //     // Re-check orderBook.isEmpty() because of spurious wake
-    //     cv.wait(lock, [&]() {
-    //         return !orderBook.isEmpty();
-    //     });
+    // lfq.print();
 
-    //     TradingAlgo algo { orderBook };
-    //     algo.StartTrading();
-    // }
+    // lfq.Pop();
+    // lfq.Pop();
+    // lfq.Pop();
+
+    // lfq.Pop();
+    // lfq.Pop();
+
+    // lfq.print();
+
+    // lfq.Push(order, Operation::Delete);
+    // lfq.Push(order, Operation::Delete);
+    // lfq.Push(order, Operation::Delete);
+    // lfq.Push(order, Operation::Delete);
+
+    // lfq.print();
+    std::condition_variable cv {};
+    std::mutex mtx {};
+
+    OrderBook orderBook {mtx, cv};
+    orderBook.InitData();
+
+    // Wait for OrderBook to InitData before running trading algo
+    {
+        std::unique_lock<std::mutex> lock (mtx);
+
+        // Re-check orderBook.isEmpty() because of spurious wake
+        cv.wait(lock, [&]() {
+            return !orderBook.isEmpty();
+        });
+
+        TradingAlgo algo { orderBook };
+        algo.StartTrading();
+    }
 
 
     return 0;

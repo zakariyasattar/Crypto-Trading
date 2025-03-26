@@ -17,6 +17,7 @@ HazardPointerOwner::HazardPointerOwner() {
 
         if(HPList[i].id.compare_exchange_strong(blankID, id)) {
             HPList[i].ptr.store(nullptr);
+            HPList[i].nextPtr.store(nullptr);
 
             hp = &HPList[i];
             break;
@@ -26,15 +27,14 @@ HazardPointerOwner::HazardPointerOwner() {
     }
 }
 
-void HazardPointerOwner::Protect(Node* ptr) {
+void HazardPointerOwner::Protect(Node* ptr, Node* nextPtr) {
     hp->ptr.store(ptr);
+    hp->nextPtr.store(ptr);
 }
 
 bool HazardPointerOwner::IsDeleteSafe(Node* ptr) {
     for(const HazardPointer& node : HPList) {
-        void* nodePtr { node.ptr.load() };
-
-        if(node.ptr.load(std::memory_order_acquire) == ptr) {
+        if(node.ptr.load(std::memory_order_acquire) == ptr || node.nextPtr.load(std::memory_order_acquire) == ptr) {
             return false;
         }
     }
@@ -62,7 +62,10 @@ void HazardPointerOwner::TryReclaim() {
 
 void HazardPointerOwner::Retire() {
     Node* ptr { hp->ptr.load() };
-    hp->ptr.store(nullptr);
 
+    hp->ptr.store(nullptr);
+    hp->nextPtr.store(nullptr);
+
+    // Only delete the current node
     retiredNodes.push_back(ptr);
 }

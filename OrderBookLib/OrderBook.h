@@ -17,6 +17,7 @@
 #include <condition_variable>
 
 #include "Enums.h"
+#include "LockFreeQueue.h"
 
 class OrderBook {
 
@@ -29,6 +30,7 @@ private:
     std::condition_variable& mCv;
 
     bool mDataReceived {};
+    LockFreeQueue mLockFreeQueue;
 
     std::atomic<double> mCurrentPrice {};
 
@@ -77,6 +79,11 @@ public:
     }
 
     bool isEmpty() { return mAsks.size() == 0 || mBids.size() == 0; }
+
+    // return instance of LockFreeQueue
+    LockFreeQueue& GetLockFreeQueue() {
+        return mLockFreeQueue;
+    }
 
     // first = price
     double GetMidPrice() { return (GetTopOrder(mAsks).price + GetTopOrder(mBids).price) / 2; };

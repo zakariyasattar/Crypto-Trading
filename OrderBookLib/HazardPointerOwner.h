@@ -15,6 +15,7 @@ struct Node;
 struct HazardPointer {
     std::atomic<std::thread::id> id;
     std::atomic<Node*> ptr;
+    std::atomic<Node*> nextPtr;
 };
 
 // main functions of hazard pointer owner:
@@ -40,7 +41,7 @@ public:
     HazardPointerOwner();
 
     // store pointer
-    void Protect(Node* ptr);
+    void Protect(Node* ptr, Node* nextPtr);
 
     // search all HPs to check if ptr is in use
     bool IsDeleteSafe(Node* ptr);

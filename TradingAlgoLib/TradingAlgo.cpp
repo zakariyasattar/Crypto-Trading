@@ -20,7 +20,7 @@ void TradingAlgo::StartTrading() {
         // OrderBook::Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
         // OrderBook::Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
         
-        mOrderBook.DisplayOrderBook();
+        // mOrderBook.DisplayOrderBook();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }

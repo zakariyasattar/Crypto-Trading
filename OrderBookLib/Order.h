@@ -3,12 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sstream>
+#include <Enums.h>
 
-enum class Side {
-    Bid,
-    Ask,
-    None
-};
+using Side = Enums::Side;
+
 
 class Order {
 private:

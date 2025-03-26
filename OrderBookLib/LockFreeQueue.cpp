@@ -15,7 +15,6 @@ LockFreeQueue::LockFreeQueue() {
     // Init dummy node
     Node* dummy { new Node{Order(-1, -1, Side::None), Operation::None, nullptr} };
 
-
     // Set head and tail to dummy node
     mHead.store(dummy);
     mTail.store(dummy);
@@ -35,6 +34,7 @@ void LockFreeQueue::Push(const Order& order, const Operation& operation) {
                  // mTail will become node if compare_exchange_weak succeeds
                 if(tail->next.compare_exchange_weak(expected, node)) {
                     mTail.compare_exchange_strong(tail, node);
+                    mSize.fetch_add(1);
                     break;
                 }
             }
@@ -49,52 +49,50 @@ void LockFreeQueue::Push(const Order& order, const Operation& operation) {
 std::pair<Order, Operation> LockFreeQueue::Pop() {
     HazardPointerOwner hazardPointerOwner { HazardPointerOwner() };
 
-    Node* node;
-
     while(true) {
+        // head never gets deleted
         Node* head { mHead.load() };
-        Node* next { head->next };
 
-        hazardPointerOwner.Protect(head);
+        Node* next { head->next }; // The target node we want to pop
 
-        if (head == mHead.load()) {
+        // If list is empty
+        // We check next because head always will point to -1 (to keep list connected)
+        // The real 'head' will always be head->next
+        if(next == nullptr) {
+            mTail.store(mHead); // Point tail back to dummy node
 
-            // Only one elem left
-            if(next == nullptr) {
-                // extract val, and set initial node to nullptr
-                node = head;
-                mHead.store(nullptr);
+            return make_pair(Order(), Operation::None);
+        }
+        
+        Node* next_next { next->next }; // The node we want to put in its place
 
-                break;
-            }
+        if(head == mHead.load()) {
+            // Protect next two nodes, because we need to use it still. Head never gets deleted
+            hazardPointerOwner.Protect(next, next_next);
 
-            // If next is what we think it is, move head to next
-            if(next == mHead.load()->next) {
-                mHead.compare_exchange_strong(head, next);
+            // if list is full
+            if(mHead.load()->next.compare_exchange_weak(next, next_next)) {
+                pair res {make_pair(next->order, next->operation)}; 
 
-                // Delete old head
                 hazardPointerOwner.Retire();
-                hazardPointerOwner.TryReclaim();
 
-                node = mHead.load();
-                break;
+                // Try to reclaim all retired nodes
+                hazardPointerOwner.TryReclaim();
+                
+                return res;
             }
         }
 
         std::this_thread::yield();
     }
-
-    std::pair<Order, Operation> res {node->order, node->operation};
-
-    return res;
 }
 
 void LockFreeQueue::print() {
     Node* curr = mHead.load();
 
     while (curr != nullptr) {
-        if(curr->next == nullptr) std::cout << curr->order;
-        else std::cout << curr->order << " -> ";
+        if(curr->next == nullptr) std::cout << curr << ": " << curr->order;
+        else std::cout << curr << ": " << curr->order << " -> ";
         curr = curr->next;
     }
 

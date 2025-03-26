@@ -12,6 +12,7 @@
 
 #include "OrderBook.h"
 #include "DataIngestion.h"
+#include "LockFreeQueue.h"
 #include "Timer.h"
 #include "Enums.h"
 
@@ -29,17 +30,35 @@ void OrderBook::InitData() {
         engine.Connect();
     }};
 
-    // detach thread so it runs separately from the program
+    // Begin listening to queue for orders coming in
+    std::thread queueListenerThread( [&]() {
+        while(true) {
+            std::pair<Order, Operation> order { mLockFreeQueue.Pop() };
+
+            // skip iter if order mLockFree.pop() is empty
+            if(order.second == Operation::None) continue;
+
+            cout << mLockFreeQueue.size() << endl;
+
+            // cout << order.first << endl;
+
+            // if(order.second == Operation::Delete) {
+            //     DeletePricePoint(order.first.GetPrice(), order.first.GetSide());
+            // }
+            // else if(order.second == Operation::Set) {
+            //     SetPricePoint(order.first.GetPrice(), order.first.GetSize(), order.first.GetSide());
+            // }
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    });
+
+    // detach threads so it runs separately from the program
     connectionThread.detach();
+    queueListenerThread.detach();
 }
 
 void OrderBook::DeletePricePoint(double price, Enums::Side side) {
-    std::cout << "Attempting to lock in DeletePricePoint\n";
-    std::lock_guard<std::mutex> lock(mMtx);
-    std::cout << "Locked in DeletePricePoint\n";
-
-    cout << price << " " << endl;
-
     if(side == Enums::Side::Buy)
         mBids.erase(price);
     else
@@ -47,10 +66,6 @@ void OrderBook::DeletePricePoint(double price, Enums::Side side) {
 }
 
 void OrderBook::SetPricePoint(double price, double size, Enums::Side side) {
-    std::cout << "Attempting to lock in SetPricePoint @ " << std::chrono::system_clock::now() << endl;
-    std::lock_guard<std::mutex> lock(mMtx);
-    std::cout << "Locked in SetPricePoint\n";
-
     int desiredMapSize { 12 };
 
     if(side == Enums::Side::Buy) {
@@ -62,7 +77,7 @@ void OrderBook::SetPricePoint(double price, double size, Enums::Side side) {
         Shrink(mAsks, desiredMapSize);
     }
 
-        // Notify if both have at least one entry
+    // Notify if both have at least one entry
     if (!mAsks.empty() && !mBids.empty()) {
         mCv.notify_one();
     }
@@ -79,10 +94,6 @@ void OrderBook::Shrink(auto& orderMap, int desiredMapSize) {
 }
 
 void OrderBook::DisplayOrderBook() {
-    std::cout << "Attempting to lock in DisplayOrderBook @ " << std::chrono::system_clock::now() << endl;
-    std::lock_guard<std::mutex> lock(mMtx);
-    std::cout << "Locked in DisplayOrderBook\n";
-
     // Clear the screen
     std::cout << CLEAR_SCREEN << std::flush;
     

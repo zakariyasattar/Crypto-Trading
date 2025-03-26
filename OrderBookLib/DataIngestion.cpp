@@ -4,6 +4,7 @@
  */
 
 #include "DataIngestion.h"
+#include "LockFreeQueue.h"
 
 #include <iostream>
 #include <iomanip>
@@ -50,10 +51,6 @@ typedef websocketpp::lib::shared_ptr<asio::ssl::context> context_ptr;
 
 // Connect to Binance exchange for order book data
 void DataIngestion::Connect() {
-    // Build initial data snapshot
-    // json initialOrderBookJSON { GetInitialOrderBook() };
-    // BuildOrderBook(initialOrderBookJSON);
-
     // Receive WebSocket updates
     UpdateBook();
 }
@@ -146,6 +143,7 @@ void DataIngestion::UpdateBook() {
             ws_client.run();
         });
 
+        // Wait for connection to start before we begin processing
         ws_thread.join();
         
     } catch (const std::exception &e) {
@@ -202,12 +200,19 @@ void DataIngestion::Populate(const json& obj, Enums::Side side) {
         double price { o["price"].get<double>() };
         double size { o["size"].get<double>() };
 
+        Order order { price, size, side };
+        Operation operation { Operation:: None };
+
         if(size == 0) {
             // Delete element at price in either asks/bids 
-            mOrderBook.DeletePricePoint(price, side);
+            // mOrderBook.DeletePricePoint(price, side);
+            operation = Operation::Delete;
         }
         else {
-            mOrderBook.SetPricePoint(price, size, side);
+            operation = Operation::Set;
+            // mOrderBook.SetPricePoint(price, size, side);
         }
+
+        mOrderBook.GetLockFreeQueue().Push(order, operation);
     }
 }

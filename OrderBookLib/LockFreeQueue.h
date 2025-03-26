@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "Order.h"
 // #include "HazardPointer.h"
 
@@ -24,10 +26,21 @@ private:
     std::atomic<Node*> mHead;
     std::atomic<Node*> mTail;
 
+    std::atomic<int> mSize;
+
 public:
     LockFreeQueue();
     void Push(const Order& order, const Operation& operation);
     std::pair<Order, Operation> Pop();
+
+    bool empty() {
+        // Does tail point to dummy order
+        return mTail.load()->order.GetPrice() == -1;
+    }
+
+    int size() {
+        return mSize.load();
+    }
 
     ~LockFreeQueue() {
         while(Node* node = mHead.load()) {
