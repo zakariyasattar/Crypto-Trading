@@ -3,7 +3,7 @@
 
 #include "Order.h"
 #include "LockFreeQueue.h"
-// #include "HazardPointer.h"
+#include "HazardPointerOwner.h"
 
 using namespace std;
 
@@ -14,6 +14,7 @@ using namespace std;
 LockFreeQueue::LockFreeQueue() {
     // Init dummy node
     Node* dummy { new Node{Order(-1, -1, Side::None), Operation::None, nullptr} };
+
 
     // Set head and tail to dummy node
     mHead.store(dummy);
@@ -46,13 +47,18 @@ void LockFreeQueue::Push(const Order& order, const Operation& operation) {
 }
 
 std::pair<Order, Operation> LockFreeQueue::Pop() {
+    HazardPointerOwner hazardPointerOwner { HazardPointerOwner() };
+
     Node* node;
 
     while(true) {
         Node* head { mHead.load() };
         Node* next { head->next };
 
+        hazardPointerOwner.Protect(head);
+
         if (head == mHead.load()) {
+
             // Only one elem left
             if(next == nullptr) {
                 // extract val, and set initial node to nullptr
@@ -63,11 +69,12 @@ std::pair<Order, Operation> LockFreeQueue::Pop() {
             }
 
             // If next is what we think it is, move head to next
-            if(next == head->next) {
+            if(next == mHead.load()->next) {
                 mHead.compare_exchange_strong(head, next);
 
                 // Delete old head
-                delete head;
+                hazardPointerOwner.Retire();
+                hazardPointerOwner.TryReclaim();
 
                 node = mHead.load();
                 break;
