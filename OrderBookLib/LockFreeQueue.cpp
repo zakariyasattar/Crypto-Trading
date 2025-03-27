@@ -34,7 +34,7 @@ void LockFreeQueue::Push(const Order& order, const Operation& operation) {
                  // mTail will become node if compare_exchange_weak succeeds
                 if(tail->next.compare_exchange_weak(expected, node)) {
                     mTail.compare_exchange_strong(tail, node);
-                    mSize.fetch_add(1);
+                    mSize.fetch_add(1, memory_order_relaxed);
                     break;
                 }
             }
@@ -78,6 +78,8 @@ std::pair<Order, Operation> LockFreeQueue::Pop() {
 
                 // Try to reclaim all retired nodes
                 hazardPointerOwner.TryReclaim();
+
+                mSize.fetch_sub(1, memory_order_relaxed);
                 
                 return res;
             }

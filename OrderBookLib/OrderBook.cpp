@@ -13,6 +13,8 @@
 #include "OrderBook.h"
 #include "DataIngestion.h"
 #include "LockFreeQueue.h"
+#include "OrderBookAnalysis.h"
+#include "Order.h"
 #include "Timer.h"
 #include "Enums.h"
 
@@ -24,10 +26,15 @@ using namespace std;
 void OrderBook::InitData() {
     // Instantiate a thread to init the connection
     std::thread connectionThread { [&]() {
-        // Instantiate OrderBook with Data from API
-        DataIngestion engine { *this };
+        try {
+            // Instantiate OrderBook with Data from API
+            DataIngestion engine { *this };
 
-        engine.Connect();
+            engine.Connect();
+        } 
+        catch(const std::exception& e) {
+            cerr << "Connection error: " << e.what() << endl;
+        }
     }};
 
     // Begin listening to queue for orders coming in
@@ -36,24 +43,24 @@ void OrderBook::InitData() {
             std::pair<Order, Operation> order { mLockFreeQueue.Pop() };
 
             // skip iter if order mLockFree.pop() is empty
-            if(order.second == Operation::None) continue;
+            if(order.second == Operation::None) {
+                continue;
+            }
 
-            cout << mLockFreeQueue.size() << endl;
+            if(order.second == Operation::Delete) {
+                DeletePricePoint(order.first.GetPrice(), order.first.GetSide());
+            }
+            else if(order.second == Operation::Set) {
+                SetPricePoint(order.first.GetPrice(), order.first.GetSize(), order.first.GetSide());
+            }
 
-            // cout << order.first << endl;
-
-            // if(order.second == Operation::Delete) {
-            //     DeletePricePoint(order.first.GetPrice(), order.first.GetSide());
-            // }
-            // else if(order.second == Operation::Set) {
-            //     SetPricePoint(order.first.GetPrice(), order.first.GetSize(), order.first.GetSide());
-            // }
+            DisplayOrderBook();
+            // std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
     });
 
-    // detach threads so it runs separately from the program
+    // detach threads so they run separately from the program
     connectionThread.detach();
     queueListenerThread.detach();
 }
@@ -70,32 +77,44 @@ void OrderBook::SetPricePoint(double price, double size, Enums::Side side) {
 
     if(side == Enums::Side::Buy) {
         mBids[price] = size;
-        Shrink(mBids, desiredMapSize);
+        Shrink(mBids, desiredMapSize, side);
     }
     else {
         mAsks[price] = size;
-        Shrink(mAsks, desiredMapSize);
+        Shrink(mAsks, desiredMapSize, side);
     }
 
-    // Notify if both have at least one entry
+    // Notify cv in main thread if both have at least one entry
     if (!mAsks.empty() && !mBids.empty()) {
         mCv.notify_one();
     }
 }
 
-void OrderBook::Shrink(auto& orderMap, int desiredMapSize) {
+void OrderBook::Shrink(auto& orderMap, int desiredMapSize, Enums::Side side) {
     // keep map at desiredMapSize price points only
-    if(orderMap.size() > desiredMapSize) {
-        auto it = orderMap.end();
-        it--;
 
-        orderMap.erase(it);
+    if(side == Enums::Side::Buy) { // delete price point at beginning for bids
+        if(orderMap.size() > desiredMapSize) {
+            orderMap.erase(orderMap.begin());
+        }
+    }
+    else { // delete price point at end for asks
+        if(orderMap.size() > desiredMapSize) {
+            orderMap.erase(std::prev(orderMap.end()));
+        }
     }
 }
 
 void OrderBook::DisplayOrderBook() {
+    // Copy maps to avoid race condition
+    // Not an issue (maps r small)
+    std::map<double, double> asks = mAsks;
+    std::map<double, double, std::greater<double>> bids = mBids;
+
     // Clear the screen
     std::cout << CLEAR_SCREEN << std::flush;
+
+    // mLockFreeQueue.print();
     
     // Display header
     std::cout << "======== BTC/USD ORDER BOOK ========" << std::endl;
@@ -111,11 +130,11 @@ void OrderBook::DisplayOrderBook() {
     
     std::cout << "---------------------------------------" << std::endl;
     
-    auto asksIt { mAsks.end() };
+    auto asksIt { asks.end() };
     asksIt--;
 
     // Display asks
-    for(; asksIt != mAsks.begin(); asksIt--) {
+    for(; asksIt != asks.begin(); asksIt--) {
         auto price { asksIt->first };
         auto size { asksIt->second };
 
@@ -127,13 +146,14 @@ void OrderBook::DisplayOrderBook() {
     }
     
     // Display bids
-    for(const auto& [price, size]: mBids) {
+    for(const auto& [price, size]: bids) {
         std::cout << std::left 
                   << std::setw(10) << "[BID]" << " | "
                   << std::right
                   << std::fixed << std::setprecision(2) << std::setw(12) << price << " | "
                   << std::fixed << std::setprecision(6) << std::setw(12) << size << std::endl;
     }
+
 
     std::cout << std::flush;
 }
@@ -149,178 +169,9 @@ string OrderBook::getCurrentTimestamp() {
     return timestamp;
 }
 
-// function that will analyze OrderBook and will return whether to buy or sell
-// and at what price to do so. Also stop-loss price
-OrderBook::Analysis OrderBook::AnalyzeOrderBook() {
-    // 3 strategies:
-    //  1. VWAP Deviation
-    //  2. Current Price near to top Bid/Ask
-    //  3. Order Book Imbalance
+Enums::Analysis OrderBook::AnalyzeOrderBook() {
+    OrderBookAnalysis analysisEngine { *this };
 
-    // each strat can return a prob of success,
-    // whichever has the highest prob should 
-    // be executed (converted to a TradeDecision)
-
-    OrderBook::TradeDecision VWAPAnalysis { CalcVWAPDev() };
-    OrderBook::TradeDecision largeNearbyOrder { FindLargeNearbyOrder() };
-    // Pass largeNearbyOrder for stop-loss purposes TODO
-    OrderBook::TradeDecision orderBookImbalance { CalcOrderBookImbalance() };
-
-    // cout << GetCurrentPrice() << endl;
-    // cout << largeNearbyOrder << endl;
-
-    // cout << orderBookImbalance << endl;
-
-    return {VWAPAnalysis, largeNearbyOrder, orderBookImbalance};
-}
-
-// TODO: make functions to check if position should be maintained or terminated?
-
-OrderBook::TradeDecision OrderBook::CalcOrderBookImbalance() {
-    auto [askVWAP, askTotalVol] = CalcVWAP(mAsks);
-    auto [bidVWAP, bidTotalVol] = CalcVWAP(mBids);
-    
-    OrderBook::TradeDecision decision;
-    
-    // Determine which side has more volume
-    bool bidSideHeavy = bidTotalVol > askTotalVol;
-    double totalDiff = abs(askTotalVol - bidTotalVol);
-    
-    // Calculate imbalance ratio (how many times larger one side is than the other)
-    double imbalanceRatio = totalDiff / (bidSideHeavy ? askTotalVol : bidTotalVol);
-        
-    // Set trade direction based on imbalance
-    if (bidSideHeavy) {
-        decision.side = Enums::Side::Buy;  // More buyers than sellers
-    } else {
-        decision.side = Enums::Side::Sell; // More sellers than buyers
-    }
-
-    // Convert ratio to confidence percentage (capped at 100%)
-    // A ratio of 2.0 means one side has 200% the volume of the other
-    double confidencePercentage = std::min(imbalanceRatio * 100.0 / 3.0, 100.0);
-    decision.weight = confidencePercentage / 100.0;
-    
-    // Apply minimum threshold to avoid acting on small imbalances
-    if (decision.weight < 0.15) { // Minimum 15% confidence required
-        decision.side = Enums::Side::None;
-        decision.weight = 0.0;
-    }
-    
-    return decision;
-}
-
-// find largest order, within 3 levels
-OrderBook::TradeDecision OrderBook::FindLargeNearbyOrder(int levelsToCheck) {
-    auto asksIt { mAsks.begin() };
-    auto bidsIt { mBids.begin() };
-
-    Enums::Order maxOrderWithinLevels {};
-
-    while(levelsToCheck-- > 0 && asksIt != mAsks.end() && bidsIt != mBids.end()) {
-        Enums::Order curr {};
-
-        if(asksIt->second > bidsIt->second) {
-            curr = Enums::Order(asksIt->first, asksIt->second, Enums::Side::Buy);
-        }
-        else {
-            curr = Enums::Order(asksIt->first, asksIt->second, Enums::Side::Sell);
-        }
-
-        maxOrderWithinLevels = maxOrderWithinLevels.size > curr.size ? maxOrderWithinLevels : curr;
-
-        asksIt++;
-        bidsIt++;
-    }
-
-    Enums::Side side { maxOrderWithinLevels.side };
-    double size { maxOrderWithinLevels.size };
-    double price { maxOrderWithinLevels.price };
-
-    auto [VWAP, totalVol] { side == Enums::Side::Buy ? CalcVWAP(mAsks) : CalcVWAP(mBids) };
-    auto [VWAPop, totalVolOp] { side == Enums::Side::Buy ? CalcVWAP(mBids) : CalcVWAP(mAsks) };
-
-    // Impact Score = (Order Size / Total Volume) * (1 - |Order Price - Relevant VWAP| / |Ask VWAP - Bid VWAP|)
-    double weight { (size / totalVol) * (1 - abs(price - VWAP) / abs(VWAP - VWAPop)) };
-
-    OrderBook::TradeDecision decision { side, GetCurrentPrice() * .995, price, weight };
-
-    if(decision.weight < 0.15) {
-        decision.side = Enums::Side::None;
-        decision.weight = 0.0;
-    }
-
-    return decision;
-}
-
-// Calculates VWAP deviation within order book
-// returns probability of trade success
-OrderBook::TradeDecision OrderBook::CalcVWAPDev() {
-    double currPrice { GetCurrentPrice()};
-
-    double bidVWAP { CalcVWAP(mBids).first };
-    double askVWAP { CalcVWAP(mAsks).first };
-
-    double bidDev { currPrice - bidVWAP };
-    double askDev { currPrice - askVWAP };
-
-    OrderBook::TradeDecision decision {};
-    
-    // Strongly overbought case
-    if(bidDev > 0 && askDev > 0) {
-        decision.side = Enums::Side::Sell;
-        decision.weight = 0.85;
-        return decision;
-    }
-    
-    // Strongly oversold case
-    if(bidDev < 0 && askDev < 0) {
-        decision.side = Enums::Side::Buy;
-        decision.weight = 0.85;
-        return decision;
-    }
-    
-    // Handle the in-between case
-    double vwapChannelWidth = askVWAP - bidVWAP;
-    
-    // Prevent division by zero
-    if(vwapChannelWidth <= 0) {
-        decision.side = Enums::Side::None;
-        decision.weight = 0;
-        return decision;
-    }
-    
-    double vwapPosition = (currPrice - bidVWAP) / vwapChannelWidth;
-    
-    // Correct the trading logic
-    if(vwapPosition > 0.5) {
-        decision.side = Enums::Side::Sell;
-        decision.weight = vwapPosition; // Higher as it approaches 1
-    } else {
-        decision.side = Enums::Side::Buy;
-        decision.weight = 1 - vwapPosition; // Higher as it approaches 0
-    }
-
-    decision.stop_loss = GetCurrentPrice() * .995;
-
-    if(decision.weight < .15) {
-        decision.side = Enums::Side::None;
-        decision.weight = 0.0;
-    }
-    
-    return decision;
-}
-
-
-// Calculate ask/bid VWAP, depending on whats passed in
-std::pair<double, double> OrderBook::CalcVWAP(const auto& orderMap) {
-    double priceVolSum {};
-    double totalVol {};
-
-    for(const auto& [price, size] : orderMap) {
-        priceVolSum += (price * size);
-        totalVol += size;
-    }
-
-    return { priceVolSum / totalVol, totalVol };
+    Enums::Analysis analysis { analysisEngine.AnalyzeOrderBook() };
+    return analysis;
 }

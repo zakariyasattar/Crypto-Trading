@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <map>
 
 class Enums {
 public:
@@ -17,17 +18,6 @@ public:
         None
     };
 
-    struct Order {
-        double price {};
-        double size {};
-        Side side { Side::None };
-
-        friend std::ostream& operator<<(std::ostream& os, const Order& o) {
-            os << o.size << " @ " << o.price;
-            return os;
-        }
-    };
-
     struct TradeDecision {
         Side side;
         double stop_loss;
@@ -40,4 +30,6 @@ public:
             return os;
         }
     };
+    
+    using Analysis = std::tuple<TradeDecision, TradeDecision, TradeDecision>;
 };

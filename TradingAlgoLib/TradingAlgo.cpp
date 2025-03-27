@@ -6,6 +6,8 @@
 
 #include "TradingAlgo.h"
 #include <OrderBook.h>
+#include <Order.h>
+
 #include <thread>
 #include <iostream>
 
@@ -15,13 +17,17 @@ using Analysis = std::tuple<OrderBook::TradeDecision, OrderBook::TradeDecision, 
 
 void TradingAlgo::StartTrading() {
     while(true) {
-        // Analysis analysis { mOrderBook.AnalyzeOrderBook() };
+        Analysis analysis { mOrderBook.AnalyzeOrderBook() };
 
-        // OrderBook::Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
-        // OrderBook::Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
+        Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
+        Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
+
+        // cout << get<0>(analysis) << endl;
+        // cout << get<1>(analysis) << endl;
+        // cout << get<2>(analysis) << endl;
         
-        // mOrderBook.DisplayOrderBook();
+        mOrderBook.DisplayOrderBook();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }

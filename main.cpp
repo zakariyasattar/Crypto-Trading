@@ -18,31 +18,6 @@
 using namespace std;
 
 int main() {
-    // LockFreeQueue lfq;
-
-    // Order order {1.0, 1.0, Side::Buy};
-
-    // lfq.Push(order, Operation::Delete);
-    // lfq.Push(order, Operation::Delete);
-    // lfq.Push(order, Operation::Delete);
-
-    // lfq.print();
-
-    // lfq.Pop();
-    // lfq.Pop();
-    // lfq.Pop();
-
-    // lfq.Pop();
-    // lfq.Pop();
-
-    // lfq.print();
-
-    // lfq.Push(order, Operation::Delete);
-    // lfq.Push(order, Operation::Delete);
-    // lfq.Push(order, Operation::Delete);
-    // lfq.Push(order, Operation::Delete);
-
-    // lfq.print();
     std::condition_variable cv {};
     std::mutex mtx {};
 

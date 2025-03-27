@@ -7,7 +7,8 @@ set(SOURCE_FILES
     DataIngestion.cpp
     LockFreeQueue.cpp
     Order.cpp
-    HazardPointerOwner
+    HazardPointerOwner.cpp
+    OrderBookAnalysis.cpp
 )
 
 # Find CURL (libcurl)

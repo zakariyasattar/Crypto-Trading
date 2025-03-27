@@ -55,35 +55,6 @@ void DataIngestion::Connect() {
     UpdateBook();
 }
 
-json DataIngestion::GetInitialOrderBook() {
-    // RAII cleanup
-    curlpp::Cleanup myCleanup;
-
-    // Set URL for Binance initial orderbook
-    curlpp::options::Url initialOrderBookURL { std::string{"https://rest.coinapi.io/v1/orderbooks/BTC_USD/current"} };
-
-    curlpp::Easy initialOrderBookRequest { };
-    initialOrderBookRequest.setOpt(initialOrderBookURL);
-
-    std::list<std::string> headers;
-    headers.push_back("X-CoinAPI-Key: " + coin_api_key);
-    headers.push_back("Accept: application/json");  // Ensures JSON response
-    initialOrderBookRequest.setOpt<curlpp::options::HttpHeader>(headers);
-
-    // Route output to custom ostringstream
-    ostringstream os {};
-    initialOrderBookRequest.setOpt(curlpp::options::WriteStream(&os));
-
-    // Perform intial order book request
-    initialOrderBookRequest.perform();
-
-    // Convert to string and parse as json
-    std::string response = os.str();
-    const json initialOrderBookJSON { json::parse(response) };
-
-    return initialOrderBookJSON;
-}
-
 // Function to initialize SSL context
 context_ptr DataIngestion::on_tls_init(websocketpp::connection_hdl hdl) {
     context_ptr ctx = websocketpp::lib::make_shared<websocketpp::lib::asio::ssl::context>(
@@ -154,8 +125,6 @@ void DataIngestion::UpdateBook() {
 void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::message_ptr msg) {
     const json response { json::parse(msg->get_payload()) };
 
-    // cout << response << endl;
-
     string type { response["type"] };
 
     // ticker stream (current price)
@@ -169,13 +138,14 @@ void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::mess
         mOrderBook.SetCurrentPrice(currPrice);
     }
     else if(type == "book20") { // depth stream (order book)
+        cout << "book20" << endl;
+        cout << response << endl;
         BuildOrderBook(response);
     }
 }
 
 // 
 void DataIngestion::BuildOrderBook(const json& response) {
-    // this is bringing in an empty map everytime
     map<double, double>& asks { mOrderBook.GetAsks() };
     map<double, double, greater<double>>& bids { mOrderBook.GetBids() };
 
@@ -194,8 +164,6 @@ void DataIngestion::BuildOrderBook(const json& response) {
 
 // Populate/Update multimaps according to webhook data
 void DataIngestion::Populate(const json& obj, Enums::Side side) {
-    int desiredMapSize { 10 };
-
     for(const auto& o : obj) {
         double price { o["price"].get<double>() };
         double size { o["size"].get<double>() };
@@ -205,14 +173,13 @@ void DataIngestion::Populate(const json& obj, Enums::Side side) {
 
         if(size == 0) {
             // Delete element at price in either asks/bids 
-            // mOrderBook.DeletePricePoint(price, side);
             operation = Operation::Delete;
         }
         else {
             operation = Operation::Set;
-            // mOrderBook.SetPricePoint(price, size, side);
         }
 
+        // Send order to LockFreeQueue
         mOrderBook.GetLockFreeQueue().Push(order, operation);
     }
 }

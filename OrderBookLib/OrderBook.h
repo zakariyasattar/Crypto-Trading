@@ -35,9 +35,7 @@ private:
     std::atomic<double> mCurrentPrice {};
 
 public:
-
     using TradeDecision = Enums::TradeDecision;
-    using Analysis = std::tuple<TradeDecision, TradeDecision, TradeDecision>;
 
     // class constructor
     OrderBook(std::mutex& mtx, std::condition_variable& cv) : mMtx(mtx), mCv(cv) { };
@@ -56,7 +54,7 @@ public:
     // Methods to update OrderBook
     void SetPricePoint(double price, double size, Enums::Side side);
     void DeletePricePoint(double price, Enums::Side side);
-    void Shrink(auto& orderMap, int desiredMapSize);
+    void Shrink(auto& orderMap, int desiredMapSize, Enums::Side side);
 
     auto& GetAsks() { return mAsks; }
     auto& GetBids() { return mBids; }
@@ -65,17 +63,17 @@ public:
     std::string getCurrentTimestamp();
 
     // Analyze OrderBook and decide what kind of trade to make
-    Analysis AnalyzeOrderBook();
+    Enums::Analysis AnalyzeOrderBook();
 
     // must use template instead of auto
     template <typename T>
-    Enums::Order GetTopOrder(const T& orderMap) {
+    Order GetTopOrder(const T& orderMap) {
         auto it { orderMap.begin() };
 
         double price { it->first };
         double size{ it->second };
 
-        return {price, size};
+        return {price, size, Side::None};
     }
 
     bool isEmpty() { return mAsks.size() == 0 || mBids.size() == 0; }
@@ -86,29 +84,11 @@ public:
     }
 
     // first = price
-    double GetMidPrice() { return (GetTopOrder(mAsks).price + GetTopOrder(mBids).price) / 2; };
-
-    std::pair<double, double> CalcVWAP(const auto& orderMap);
-
-    // 3 strategies
-
-    // Calc VWAP deviation in order book, return prob of trade success
-    TradeDecision CalcVWAPDev();
-
-    // Calc Imbalance between bid and ask volume in order book
-    TradeDecision CalcOrderBookImbalance();
-
-    // Find largest order within x amount of levels
-    TradeDecision FindLargeNearbyOrder(int levelsToCheck = 3);
+    double GetMidPrice() { return (GetTopOrder(mAsks).GetPrice() + GetTopOrder(mBids).GetPrice()) / 2; };
 
     // Getters and Setters with mutual exclusion for current price variable
     // Current price is modified concurrently, so mutex is needed
-    void SetCurrentPrice(double price) {
-        mCurrentPrice.store(price, std::memory_order_relaxed);
-    }
-
-    double GetCurrentPrice() {
-        return mCurrentPrice.load(std::memory_order_relaxed);
-    }
+    void SetCurrentPrice(double price) { mCurrentPrice.store(price, std::memory_order_relaxed); }
+    double GetCurrentPrice() { return mCurrentPrice.load(std::memory_order_relaxed); }
 };
 
