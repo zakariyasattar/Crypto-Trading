@@ -18,6 +18,11 @@ public:
         None
     };
 
+    struct LargestNearbyOrder {
+        double bid;
+        double ask;
+    };
+
     struct TradeDecision {
         Side side;
         double stop_loss;
@@ -30,6 +35,6 @@ public:
             return os;
         }
     };
-    
+
     using Analysis = std::tuple<TradeDecision, TradeDecision, TradeDecision>;
 };

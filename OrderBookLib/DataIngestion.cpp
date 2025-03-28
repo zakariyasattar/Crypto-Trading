@@ -138,8 +138,6 @@ void DataIngestion::on_message(websocketpp::connection_hdl hdl, tls_client::mess
         mOrderBook.SetCurrentPrice(currPrice);
     }
     else if(type == "book20") { // depth stream (order book)
-        cout << "book20" << endl;
-        cout << response << endl;
         BuildOrderBook(response);
     }
 }

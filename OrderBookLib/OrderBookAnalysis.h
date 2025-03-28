@@ -4,6 +4,7 @@
 #include "OrderBook.h"
 
 using TradeDecision = Enums::TradeDecision;
+using LargestNearbyOrder = Enums::LargestNearbyOrder;
 
 class OrderBookAnalysis {
 private:
@@ -20,10 +21,10 @@ public:
     TradeDecision CalcVWAPDev();
 
     // Calc Imbalance between bid and ask volume in order book
-    TradeDecision CalcOrderBookImbalance();
+    TradeDecision CalcOrderBookImbalance(LargestNearbyOrder largestOrder);
 
     // Find largest order within x amount of levels
-    TradeDecision FindLargeNearbyOrder(int levelsToCheck = 3);
+    std::pair<TradeDecision, LargestNearbyOrder> FindLargeNearbyOrder(int levelsToCheck = 3);
 
     std::pair<double, double> CalcVWAP(const auto& orderMap);
 

@@ -54,8 +54,6 @@ void OrderBook::InitData() {
                 SetPricePoint(order.first.GetPrice(), order.first.GetSize(), order.first.GetSide());
             }
 
-            DisplayOrderBook();
-            // std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
 
     });
@@ -103,6 +101,14 @@ void OrderBook::Shrink(auto& orderMap, int desiredMapSize, Enums::Side side) {
             orderMap.erase(std::prev(orderMap.end()));
         }
     }
+}
+
+double OrderBook::GetCurrentPrice() { 
+    Order topAsk { GetTopOrder(mAsks) };
+    Order topBid { GetTopOrder(mBids) };
+
+    // return mCurrentPrice.load(std::memory_order_relaxed);
+    return (topAsk.GetPrice() + topBid.GetPrice()) / 2;
 }
 
 void OrderBook::DisplayOrderBook() {

@@ -19,12 +19,17 @@ void TradingAlgo::StartTrading() {
     while(true) {
         Analysis analysis { mOrderBook.AnalyzeOrderBook() };
 
+        // Find TradeDecision with max weight
+        auto bestDecision = std::apply([](auto&&... decisions) {
+            return std::max({decisions...}, [](const auto& a, const auto& b) {
+                return a.weight < b.weight;
+            });
+        }, analysis);
+
+        cout << bestDecision << endl;
+
         Order topAsk { mOrderBook.GetTopOrder(mOrderBook.GetAsks()) };
         Order topBid { mOrderBook.GetTopOrder(mOrderBook.GetBids()) };
-
-        // cout << get<0>(analysis) << endl;
-        // cout << get<1>(analysis) << endl;
-        // cout << get<2>(analysis) << endl;
         
         mOrderBook.DisplayOrderBook();
 

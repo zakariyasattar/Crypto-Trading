@@ -67,7 +67,7 @@ public:
 
     // must use template instead of auto
     template <typename T>
-    Order GetTopOrder(const T& orderMap) {
+    Order GetTopOrder(const T orderMap) { // pass by val (not ref) to handle race condition
         auto it { orderMap.begin() };
 
         double price { it->first };
@@ -89,6 +89,6 @@ public:
     // Getters and Setters with mutual exclusion for current price variable
     // Current price is modified concurrently, so mutex is needed
     void SetCurrentPrice(double price) { mCurrentPrice.store(price, std::memory_order_relaxed); }
-    double GetCurrentPrice() { return mCurrentPrice.load(std::memory_order_relaxed); }
+    double GetCurrentPrice();
 };
 

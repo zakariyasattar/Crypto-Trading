@@ -15,16 +15,16 @@ Enums::Analysis OrderBookAnalysis::AnalyzeOrderBook() {
     // be executed (converted to a TradeDecision)
 
     TradeDecision VWAPAnalysis { CalcVWAPDev() };
-    TradeDecision largeNearbyOrder { FindLargeNearbyOrder() };
+    std::pair<TradeDecision, LargestNearbyOrder> largeNearbyOrder { FindLargeNearbyOrder() };
     // Pass largeNearbyOrder for stop-loss purposes TODO
-    TradeDecision orderBookImbalance { CalcOrderBookImbalance() };
+    TradeDecision orderBookImbalance { CalcOrderBookImbalance(largeNearbyOrder.second) };
 
-    return {VWAPAnalysis, largeNearbyOrder, orderBookImbalance};
+    return {VWAPAnalysis, largeNearbyOrder.first, orderBookImbalance};
 }
 
 // TODO: make functions to check if position should be maintained or terminated?
 
-TradeDecision OrderBookAnalysis::CalcOrderBookImbalance() {
+TradeDecision OrderBookAnalysis::CalcOrderBookImbalance(LargestNearbyOrder largestOrder) {
     auto [askVWAP, askTotalVol] = CalcVWAP(mAsks);
     auto [bidVWAP, bidTotalVol] = CalcVWAP(mBids);
     
@@ -48,6 +48,11 @@ TradeDecision OrderBookAnalysis::CalcOrderBookImbalance() {
     // A ratio of 2.0 means one side has 200% the volume of the other
     double confidencePercentage = std::min(imbalanceRatio * 100.0 / 3.0, 100.0);
     decision.weight = confidencePercentage / 100.0;
+
+    double currPrice { mOrderBook.GetCurrentPrice() };
+
+    decision.exit_price = decision.side == Side::Buy ? largestOrder.bid : largestOrder.ask;
+    decision.stop_loss = decision.side == Side::Buy ? currPrice * 1.02 : currPrice * 0.98;
     
     // Apply minimum threshold to avoid acting on small imbalances
     if (decision.weight < 0.15) { // Minimum 15% confidence required
@@ -59,30 +64,34 @@ TradeDecision OrderBookAnalysis::CalcOrderBookImbalance() {
 }
 
 // find largest order, within 3 levels
-TradeDecision OrderBookAnalysis::FindLargeNearbyOrder(int levelsToCheck) {
+std::pair<TradeDecision, LargestNearbyOrder> OrderBookAnalysis::FindLargeNearbyOrder(int levelsToCheck) {
     auto asksIt { mAsks.begin() };
     auto bidsIt { mBids.begin() };
 
     Order maxOrderWithinLevels {};
 
-    Order maxBid {};
-    Order maxAsk {};
+    Order maxBid { 0.0, 0.0, Side::None };
+    Order maxAsk { 0.0, 0.0, Side::None };
 
     while(levelsToCheck-- > 0 && asksIt != mAsks.end() && bidsIt != mBids.end()) {
-        Order curr {};
+        double asksSize { asksIt->second };
+        double asksPrice { asksIt->first };
 
-        if(asksIt->second > bidsIt->second) {
-            curr = Order(asksIt->first, asksIt->second, Enums::Side::Buy);
-        }
-        else {
-            curr = Order(bidsIt->first, bidsIt->second, Enums::Side::Sell);
-        }
+        double bidsSize { bidsIt->second };
+        double bidsPrice { bidsIt->first };
 
-        maxOrderWithinLevels = maxOrderWithinLevels.GetSize() > curr.GetSize() ? maxOrderWithinLevels : curr;
+        if(asksSize > bidsSize && asksSize > maxAsk.GetSize()) {
+            maxAsk = Order(asksPrice, asksSize, Side::Buy);
+        }
+        else if(asksSize <= bidsSize && bidsSize > maxBid.GetSize()) {
+            maxBid = Order(bidsPrice, bidsSize, Side::Sell);
+        }
 
         asksIt++;
         bidsIt++;
     }
+
+    maxOrderWithinLevels = maxAsk.GetSize() > maxBid.GetSize() ? maxAsk : maxBid;
 
     Enums::Side side { maxOrderWithinLevels.GetSide() };
     double size { maxOrderWithinLevels.GetSize() };
@@ -101,7 +110,9 @@ TradeDecision OrderBookAnalysis::FindLargeNearbyOrder(int levelsToCheck) {
         decision.weight = 0.0;
     }
 
-    return decision;
+    LargestNearbyOrder largestNearbyOrder { maxBid.GetPrice(), maxAsk.GetPrice() };
+
+    return std::make_pair(decision, largestNearbyOrder);
 }
 
 // Calculates VWAP deviation within order book
@@ -152,7 +163,17 @@ TradeDecision OrderBookAnalysis::CalcVWAPDev() {
         decision.weight = 1 - vwapPosition; // Higher as it approaches 0
     }
 
-    decision.stop_loss = mOrderBook.GetCurrentPrice() * .995;
+    decision.stop_loss = mOrderBook.GetCurrentPrice() * .98;
+    
+    double reward_to_risk = 2.0;  // Target 2x the stop loss distance
+
+    if (decision.side == Enums::Side::Buy) {
+        double risk = currPrice - decision.stop_loss;
+        decision.exit_price = currPrice + (risk * reward_to_risk);
+    } else if (decision.side == Enums::Side::Sell) {
+        double risk = decision.stop_loss - currPrice;
+        decision.exit_price = currPrice - (risk * reward_to_risk);
+    }
 
     if(decision.weight < .15) {
         decision.side = Enums::Side::None;
@@ -171,6 +192,11 @@ std::pair<double, double> OrderBookAnalysis::CalcVWAP(const auto& orderMap) {
     for(const auto& [price, size] : orderMap) {
         priceVolSum += (price * size);
         totalVol += size;
+    }
+
+    // prevent div by zero
+    if(totalVol == 0.0) {
+        return {0, 0};
     }
 
     return { priceVolSum / totalVol, totalVol };
