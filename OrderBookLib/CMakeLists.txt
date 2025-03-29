@@ -11,15 +11,8 @@ set(SOURCE_FILES
     OrderBookAnalysis.cpp
 )
 
-# Find CURL (libcurl)
-find_package(CURL REQUIRED)
-
-# Manually set cURLpp paths
-set(CURLPP_INCLUDE_DIR /opt/homebrew/include)
-set(CURLPP_LIBRARY /opt/homebrew/lib/libcurlpp.dylib)
-
 # Include directories
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CURLPP_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Find
 find_package(OpenSSL REQUIRED)

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <string>
 #include <map>
 
 class Enums {
@@ -32,6 +33,17 @@ public:
         friend std::ostream& operator<<(std::ostream& os, const TradeDecision& td) {
             std::string str { td.side == Side::Buy ? "Buy" : "Sell" };
             os << str << " " << td.exit_price << " " << td.stop_loss << " " << td.weight;
+            return os;
+        }
+    };
+
+    struct Position {
+        std::string asset_id;
+        TradeDecision td;
+
+        friend std::ostream& operator<<(std::ostream& os, const Position& pos) {
+            os << pos.td;
+
             return os;
         }
     };

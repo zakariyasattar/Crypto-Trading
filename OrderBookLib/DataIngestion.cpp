@@ -41,9 +41,6 @@
 using json = nlohmann::json;
 using namespace std;
 
-const string alpaca_api_key { "PKWTH6N3SM1XALKB870E" };
-const string alpaca_api_secret { "sS8KmCnbdYKcT6y6wZzJ5hhjgTx8svbSM8gTFfuK" };
-
 const string coin_api_key { "e508df71-b919-4e7c-b062-79a517f1c54d" };
 
 typedef websocketpp::client<websocketpp::config::asio_tls_client> tls_client;

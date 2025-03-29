@@ -160,7 +160,6 @@ void OrderBook::DisplayOrderBook() {
                   << std::fixed << std::setprecision(6) << std::setw(12) << size << std::endl;
     }
 
-
     std::cout << std::flush;
 }
 
