@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Install Dependencies
+brew update
+brew install cmake
+brew install openssl boost curl curlpp websocketpp
+
 # Set build directory
 BUILD_DIR="build"
 EXECUTABLE_NAME="trading_system"  # Change this to your executable name
