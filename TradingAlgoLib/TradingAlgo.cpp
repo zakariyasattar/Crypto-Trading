@@ -48,18 +48,12 @@ void TradingAlgo::StartTrading() {
                 mExecutionEngine.ClosePosition(mOpenPosition.asset_id);
             }
         }
-
-        DisplayCurrentPosition();
         
-        // mOrderBook.DisplayOrderBook();
+        // Display open position along with order book
+        mOrderBook.DisplayOrderBook(mOpenPosition);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
     }
-}
-
-void TradingAlgo::DisplayCurrentPosition() {
-    cout << "Current Pos: " << endl;
-    cout << mOpenPosition << endl;
 }
 
 TradingAlgo::~TradingAlgo() {

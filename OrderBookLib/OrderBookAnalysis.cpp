@@ -40,8 +40,10 @@ TradeDecision OrderBookAnalysis::CalcOrderBookImbalance(LargestNearbyOrder large
     // Set trade direction based on imbalance
     if (bidSideHeavy) {
         decision.side = Enums::Side::Buy;  // More buyers than sellers
+        decision.strategy = "Order Book Imbalance: Bid Side Heavy";
     } else {
         decision.side = Enums::Side::Sell; // More sellers than buyers
+        decision.strategy = "Order Book Imbalance: Ask Side Heavy";
     }
 
     // Convert ratio to confidence percentage (capped at 100%)
@@ -103,7 +105,9 @@ std::pair<TradeDecision, LargestNearbyOrder> OrderBookAnalysis::FindLargeNearbyO
     // Impact Score = (Order Size / Total Volume) * (1 - |Order Price - Relevant VWAP| / |Ask VWAP - Bid VWAP|)
     double weight { (size / totalVol) * (1 - abs(price - VWAP) / abs(VWAP - VWAPop)) };
 
-    TradeDecision decision { side, mOrderBook.GetCurrentPrice() * .995, price, weight };
+    std::string strategy { "Large Order: Size (" + std::to_string(size) + ") Price (" + std::to_string(price) + ") " + (side == Side::Buy ? "Bid" : "Ask") + " Side"};
+
+    TradeDecision decision { side, mOrderBook.GetCurrentPrice() * .995, price, weight, strategy };
 
     if(decision.weight < 0.15) {
         decision.side = Enums::Side::None;
@@ -132,6 +136,8 @@ TradeDecision OrderBookAnalysis::CalcVWAPDev() {
     if(bidDev > 0 && askDev > 0) {
         decision.side = Enums::Side::Sell;
         decision.weight = 0.85;
+        decision.strategy = "VWAP Deviation: Strongly Overbought";
+
         return decision;
     }
     
@@ -139,6 +145,8 @@ TradeDecision OrderBookAnalysis::CalcVWAPDev() {
     if(bidDev < 0 && askDev < 0) {
         decision.side = Enums::Side::Buy;
         decision.weight = 0.85;
+        decision.strategy = "VWAP Deviation: Strongly Oversold";
+
         return decision;
     }
     
@@ -149,6 +157,7 @@ TradeDecision OrderBookAnalysis::CalcVWAPDev() {
     if(vwapChannelWidth <= 0) {
         decision.side = Enums::Side::None;
         decision.weight = 0;
+
         return decision;
     }
     
@@ -178,6 +187,9 @@ TradeDecision OrderBookAnalysis::CalcVWAPDev() {
     if(decision.weight < .15) {
         decision.side = Enums::Side::None;
         decision.weight = 0.0;
+    }
+    else {
+        decision.strategy = "VWAP Deviation";
     }
     
     return decision;

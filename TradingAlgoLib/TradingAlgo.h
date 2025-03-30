@@ -11,7 +11,6 @@ private:
 public:
     TradingAlgo(OrderBook& orderBook) : mOrderBook(orderBook) {}
     void StartTrading();
-    void DisplayCurrentPosition();
 
     ~TradingAlgo();
 };

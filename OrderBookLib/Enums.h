@@ -29,20 +29,24 @@ public:
         double stop_loss;
         double exit_price;
         double weight;
-
-        friend std::ostream& operator<<(std::ostream& os, const TradeDecision& td) {
-            std::string str { td.side == Side::Buy ? "Buy" : "Sell" };
-            os << str << " " << td.exit_price << " " << td.stop_loss << " " << td.weight;
-            return os;
-        }
+        std::string strategy;
     };
 
     struct Position {
         std::string asset_id;
         TradeDecision td;
 
+        // Display Position
         friend std::ostream& operator<<(std::ostream& os, const Position& pos) {
-            os << pos.td;
+            Side side { pos.td.side };
+            double exit_price { pos.td.exit_price };
+            double stop_price { pos.td.stop_loss };
+            std::string strategy { pos.td.strategy };
+
+            os << "Side: " << (side == Side::Buy ? "Buy" : "Sell") << std::endl;
+            os << "Exiting At: " << exit_price << std::endl;
+            os << "Stop Loss Set At: " << stop_price << std::endl;
+            os << "Strategy: " << strategy << std::endl;
 
             return os;
         }

@@ -49,7 +49,7 @@ public:
     void InitData();
 
     // Print out OrderBook
-    void DisplayOrderBook();
+    void DisplayOrderBook(Enums::Position currentPos);
 
     // Methods to update OrderBook
     void SetPricePoint(double price, double size, Enums::Side side);

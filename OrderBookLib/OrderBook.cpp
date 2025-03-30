@@ -111,7 +111,7 @@ double OrderBook::GetCurrentPrice() {
     return (topAsk.GetPrice() + topBid.GetPrice()) / 2;
 }
 
-void OrderBook::DisplayOrderBook() {
+void OrderBook::DisplayOrderBook(Enums::Position currentPos) {
     // Copy maps to avoid race condition
     // Not an issue (maps r small)
     std::map<double, double> asks = mAsks;
@@ -120,7 +120,8 @@ void OrderBook::DisplayOrderBook() {
     // Clear the screen
     std::cout << CLEAR_SCREEN << std::flush;
 
-    // mLockFreeQueue.print();
+    std::cout << "======== CURRENT OPEN POSITION =====" << std::endl;
+    cout << currentPos << endl << endl;
     
     // Display header
     std::cout << "======== BTC/USD ORDER BOOK ========" << std::endl;

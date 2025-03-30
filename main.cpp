@@ -40,9 +40,7 @@ int main() {
         gAlgo = &algo;
 
         std::signal(SIGINT, [](int) {
-            std::cout << "\nShutting down...\n";
             if(gAlgo) gAlgo->~TradingAlgo();
-
             std::exit(0);
         });
 
