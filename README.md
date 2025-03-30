@@ -4,7 +4,7 @@ This project is a multi-threaded, lock-free trading engine that pulls live Level
 
 ### Why this project?
 
-I wanted to build a real trading engine—not just a simulator. Something that could realistically ingest live data from a crypto exchange, build and maintain an order book in real time, and then make trading decisions based on actual market structure, not just lagging indicators. This also gave me an excuse to dive into topics like hazard pointers, lock-free queues, and Level II market data, all of which are pretty relevant for trading firms like Optiver.
+I wanted to build a real trading engine—not just a simulator. Something that could realistically ingest live data from a crypto exchange, build and maintain an order book in real time, and then make trading decisions based on actual market structure, not just lagging indicators. This also gave me an excuse to dive into topics like hazard pointers, lock-free queues, and Level II market data.
 
 ---
 
@@ -14,7 +14,7 @@ I wanted to build a real trading engine—not just a simulator. Something that c
 Uses WebSocket connections to fetch live Level II order book data from CoinAPI (BTC/USD specifically). It parses JSON payloads and updates the internal book with millisecond latency.
 
 **Order Book**  
-Built around two multimaps (bids and asks) and kept thread-safe through an internal lock-free queue (see below). Every price level and order size is preserved, so we can do proper book analysis.
+Built around two std::map(s) (bids and asks) and kept thread-safe through an internal lock-free queue (see below). Every price level and order size is preserved, so we can do proper book analysis.
 
 **Lock-Free Queue**  
 This is the backbone of the pipeline. New orders are pushed to the queue by the WebSocket thread and popped off by the main processing thread. It uses atomic pointers and hazard pointers to avoid data races and safely reclaim memory without needing locks or mutexes.
@@ -45,7 +45,7 @@ Each strategy returns a `TradeDecision` struct with a recommended side, stop los
 
 Here's a snapshot of what a trade decision looks like, along with a live view of the order book:
 
-![Order Book Output](image.png)
+![Order Book Output](![image](https://github.com/user-attachments/assets/285c25be-4d51-4a03-ab9b-e1badc1d25e0))
 
 ---
 
@@ -61,9 +61,7 @@ Here's a snapshot of what a trade decision looks like, along with a live view of
 
 ## Run it
 
-Make sure to set your API keys in `DataIngestion.cpp`. You’ll also need to link with `OpenSSL` and `pthread`.
-
-Then just run the provided shell script:
+Just run the provided shell script:
 
 ```bash
 ./run.sh
@@ -79,9 +77,3 @@ That will build and launch the engine. You should see the order book populate in
 - Execution logic (right now, it just makes decisions, doesn’t place trades)  
 - Multi-asset support  
 - Add backtest mode with historical data  
-
----
-
-## Why this matters
-
-A lot of people build backtesters or paper trading bots. This one actually *listens* to the market, ticks in real time, and tries to make sense of what’s happening *right now*. If you're prepping for a trading firm interview or just curious how real-world trading systems work under the hood, this should be an insightful project.
