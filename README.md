@@ -45,7 +45,7 @@ Each strategy returns a `TradeDecision` struct with a recommended side, stop los
 
 Here's a snapshot of what a trade decision looks like, along with a live view of the order book:
 
-![Order Book Output](![image](https://github.com/user-attachments/assets/285c25be-4d51-4a03-ab9b-e1badc1d25e0))
+![Order Book Output](https://github.com/user-attachments/assets/285c25be-4d51-4a03-ab9b-e1badc1d25e0)
 
 ---
 
