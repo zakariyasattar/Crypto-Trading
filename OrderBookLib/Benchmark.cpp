@@ -1,4 +1,7 @@
 #include "Benchmark.h"
+#include "LockFreeQueue.h"
+#include "MutexQueue.h"
+
 #include <vector>
 
 using namespace std;

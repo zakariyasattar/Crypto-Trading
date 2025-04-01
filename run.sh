@@ -1,9 +1,22 @@
 #!/bin/bash
 
 # Install Dependencies
-brew update
-brew install cmake
-brew install openssl boost curl curlpp websocketpp
+
+# Function to check and install a brew package if not installed
+install_if_missing() {
+    if ! brew ls --versions "$1" > /dev/null; then
+        echo "Installing $1..."
+        brew install "$1"
+    fi
+}
+
+# Install necessary dependencies
+install_if_missing cmake
+install_if_missing openssl
+install_if_missing boost
+install_if_missing curl
+install_if_missing curlpp
+install_if_missing websocketpp
 
 # Set build directory
 BUILD_DIR="build"
