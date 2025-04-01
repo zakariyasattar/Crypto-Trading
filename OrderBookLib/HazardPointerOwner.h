@@ -54,4 +54,12 @@ public:
     
     // remove protection and mark for deletion
     void Retire();
+
+    ~HazardPointerOwner() {
+        if (hp != nullptr) {
+            hp->ptr.store(nullptr);
+            hp->nextPtr.store(nullptr);
+            hp = nullptr;
+        }
+    }
 };

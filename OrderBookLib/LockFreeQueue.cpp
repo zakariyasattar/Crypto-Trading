@@ -21,13 +21,17 @@ LockFreeQueue::LockFreeQueue() {
 }
 
 void LockFreeQueue::Push(const Order& order, const Operation& operation) {
+    HazardPointerOwner hazardPointerOwner { HazardPointerOwner() };
     Node* node { new Node{order, operation, nullptr} };
 
     while(true) {
         Node* tail { mTail.load() };
-        Node* next { tail->next };
+
+        hazardPointerOwner.Protect(tail, nullptr);
 
         if(tail == mTail.load()) {
+            Node* next { tail->next };
+
             if(next == nullptr) {
                 Node* expected = nullptr;
 
@@ -47,6 +51,7 @@ void LockFreeQueue::Push(const Order& order, const Operation& operation) {
 }
 
 std::pair<Order, Operation> LockFreeQueue::Pop() {
+    static thread_local int retireCounter = 0;
     HazardPointerOwner hazardPointerOwner { HazardPointerOwner() };
 
     while(true) {
@@ -72,12 +77,16 @@ std::pair<Order, Operation> LockFreeQueue::Pop() {
 
             // if list is full
             if(mHead.load()->next.compare_exchange_weak(next, next_next)) {
-                pair res {make_pair(next->order, next->operation)}; 
+                pair res {make_pair(Order(next->order), Operation(next->operation))}; 
 
                 hazardPointerOwner.Retire();
 
                 // Try to reclaim all retired nodes
-                hazardPointerOwner.TryReclaim();
+
+                if (++retireCounter >= 1000) {
+                    hazardPointerOwner.TryReclaim();
+                    retireCounter = 0;
+                }
 
                 mSize.fetch_sub(1, memory_order_relaxed);
                 

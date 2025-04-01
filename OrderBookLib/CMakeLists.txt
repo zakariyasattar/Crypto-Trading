@@ -9,6 +9,8 @@ set(SOURCE_FILES
     Order.cpp
     HazardPointerOwner.cpp
     OrderBookAnalysis.cpp
+    Benchmark.cpp
+    MutexQueue.cpp
 )
 
 # Include directories

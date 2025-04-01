@@ -5,19 +5,18 @@
 #include <condition_variable>
 #include <queue>
 
-#include "Enums.h"
 #include "Order.h"
 
 using Operation = Enums::Operation;
 
-struct Node {
+struct MtxNode {
     Order order;
     Operation operation;
 };
 
 class MutexQueue{
 private:
-    std::queue<Node> mOrderQueue;
+    std::queue<MtxNode> mOrderQueue;
     std::mutex mMtx;
     std::condition_variable mCv;
 

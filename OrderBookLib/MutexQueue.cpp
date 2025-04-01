@@ -3,14 +3,14 @@
 void MutexQueue::Push(const Order& order, const Operation& operation) {
     std::lock_guard<std::mutex> lock(mMtx);
 
-    mOrderQueue.push(Node(order, operation));
+    mOrderQueue.push(MtxNode(order, operation));
 }
 
 std::pair<Order, Operation> MutexQueue::Pop() {
     std::lock_guard<std::mutex> lock(mMtx);
 
     if(!mOrderQueue.empty()) {
-        Node curr { mOrderQueue.front() };
+        MtxNode curr { mOrderQueue.front() };
         mOrderQueue.pop();
 
         return {curr.order, curr.operation};
@@ -20,14 +20,14 @@ std::pair<Order, Operation> MutexQueue::Pop() {
 }
 
 void MutexQueue::print() {
-    std::queue<Node> qCopy;
+    std::queue<MtxNode> qCopy;
     {
         std::lock_guard<std::mutex> lock(mMtx);
         qCopy = mOrderQueue;
     }
 
     while(!qCopy.empty()) {
-        Node curr { qCopy.front() };
+        MtxNode curr { qCopy.front() };
         qCopy.pop();
 
         std::cout << curr.order << std::endl;
