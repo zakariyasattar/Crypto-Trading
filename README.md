@@ -67,13 +67,12 @@ Just run the provided shell script:
 ./run.sh
 ```
 
-That will build and launch the engine. You should see the order book populate in real time and eventually get trade decisions printed to the terminal.
+That will build and launch the engine. You should see the order book populate in real time and get trade decisions printed to the terminal.
 
 ---
 
 ## Things to improve
 
 - Proper stop-loss enforcement and position tracking  
-- Execution logic (right now, it just makes decisions, doesn’t place trades)  
 - Multi-asset support  
 - Add backtest mode with historical data  
