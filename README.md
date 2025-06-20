@@ -4,7 +4,7 @@ This project is a multi-threaded, lock-free trading engine that pulls live Level
 
 ### Why this project?
 
-I wanted to build a real trading engine—not just a simulator. Something that could realistically ingest live data from a crypto exchange, build and maintain an order book in real time, and then make trading decisions based on actual market structure, not just lagging indicators. This also gave me an excuse to dive into topics like hazard pointers, lock-free queues, and Level II market data.
+I wanted to build a real trading engine that could ingest live data from a crypto exchange, build and maintain an order book in real time, and then make trading decisions based on actual market structure. This also gave me an excuse to dive into topics like hazard pointers, lock-free queues, and Level II market data.
 
 ---
 
@@ -17,7 +17,7 @@ Uses WebSocket connections to fetch live Level II order book data from CoinAPI (
 Built around two std::map(s) (bids and asks) and kept thread-safe through an internal lock-free queue (see below). Every price level and order size is preserved, so we can do proper book analysis.
 
 **Lock-Free Queue**  
-This is the backbone of the pipeline. New orders are pushed to the queue by the WebSocket thread and popped off by the main processing thread. It uses atomic pointers and hazard pointers to avoid data races and safely reclaim memory without needing locks or mutexes.
+New orders are pushed to the queue by the WebSocket thread and popped off by the main processing thread. It uses atomic pointers and hazard pointers to avoid data races and safely reclaim memory without needing locks or mutexes.
 
 **Hazard Pointers**  
 For safe memory reclamation in concurrent environments. Retired nodes are only deleted when we’re sure no other thread is using them.
@@ -53,8 +53,7 @@ Here's a snapshot of what a trade decision looks like, along with a live view of
 
 - `websocketpp` for WebSocket communication  
 - `nlohmann/json` for JSON parsing  
-- `OpenSSL` for TLS  
-- `curlpp` for REST API calls (not heavily used right now)  
+- `OpenSSL` for TLS
 - C++17  
 
 ---
